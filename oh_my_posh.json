@@ -58,6 +58,39 @@
     },
     {
       "type": "prompt",
+      "alignment": "right",
+      "segments": [
+        {
+          "properties": {
+            "cache_duration": "none",
+            "context_aliases": {
+              "arn:aws:eks:us-east-2:833241423620:cluster/joey": "joeys effectual cluster"
+            }
+          },
+          "leading_diamond": "\ue0b2",
+          "template": " \ufd31 {{.Context}}{{if .Namespace}} :: {{.Namespace}}{{end}} ",
+          "foreground": "#000000",
+          "powerline_symbol": "\ue0b0",
+          "background": "#ebcc34",
+          "type": "kubectl",
+          "style": "diamond"
+        },
+        {
+          "properties": {
+            "cache_duration": "none"
+          },
+          "trailing_diamond": "\ue0b4",
+          "template": " \ue7ad {{.Profile}}{{if .Region}}@{{.Region}}{{end}}",
+          "foreground": "#282a36",
+          "background": "#f1fa8c",
+          "type": "aws",
+          "style": "diamond",
+          "invert_powerline": true
+        }
+      ]
+    },
+    {
+      "type": "prompt",
       "alignment": "left",
       "segments": [
         {

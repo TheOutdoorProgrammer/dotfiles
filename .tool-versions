@@ -1,12 +1,12 @@
 nodejs lts
-awscli 2.25.2
-golang 1.23.0
-kubectl 1.32.3
-terraform 1.11.2
+awscli 2.31.6
+golang 1.25.1
+kubectl 1.34.1
+terraform 1.13.3
 yarn 1.22.17
 python 3.10.5
 flux2 0.41.2
-opentofu 1.9.0
+opentofu 1.10.6
 ruby 3.1.2
 mockery 2.36.0
 terragrunt 0.66.3

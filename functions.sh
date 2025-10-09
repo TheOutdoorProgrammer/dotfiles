@@ -190,6 +190,57 @@ idea(){
   open -na "IntelliJ IDEA.app" --args "$@"
 }
 
+
+goTestFunc() {
+    # Check if at least 1 argument is provided
+    if [ $# -lt 1 ]; then
+        echo "Usage: goTestFunc [-p package] <test1> [test2] [test3] ..."
+        echo "Example: goTestFunc test1 test2                           # uses ./..."
+        echo "Example: goTestFunc -p spacelift test1 test2              # uses ./spacelift"
+        return 1
+    fi
+    
+    local package="./..."
+    local tests=()
+    
+    # Check if first argument is -p
+    if [[ $1 == "-p" ]]; then
+        # -p flag present, second argument is package, rest are tests
+        if [ $# -lt 3 ]; then
+            echo "Error: When using -p, you must specify package and at least one test"
+            echo "Usage: goTestFunc -p <package> <test1> [test2] ..."
+            return 1
+        fi
+        package="./$2"
+        tests=("${@:3}")  # All arguments starting from the third one
+    else
+        # No -p flag, all arguments are test names
+        tests=("$@")
+    fi
+    
+    # Build the -run parameter by joining test names with |
+    local run_pattern=""
+    if [ ${#tests[@]} -eq 1 ]; then
+        run_pattern="${tests[1]}"
+    else
+        # Join test names with | for regex OR pattern
+        run_pattern=$(printf "%s|" "${tests[@]}")
+        run_pattern="${run_pattern%|}"  # Remove trailing |
+    fi
+    
+    # Construct and execute the command
+    local cmd="go test -v $package -run \"$run_pattern\""
+    
+    echo "Running: $cmd"
+    eval "$cmd"
+}
+
+kubie() {
+    [[ "$1" == "ctx" ]] && kubecm switch "${@:2}" || kubecm "$@"
+}
+
+source $HOME/registry-list.sh
+
 # Defaults
 export AWS_DEFAULT_REGION="us-east-2"
 export AWS_PROFILE="default"

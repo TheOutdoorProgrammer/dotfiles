@@ -21,6 +21,15 @@ duti -s com.sublimetext.4 .yml all
 duti -s com.sublimetext.4 .sh all
 duti -s com.sublimetext.4 .js all
 duti -s com.sublimetext.4 .config all
+duti -s com.sublimetext.4 .json all
+duti -s com.sublimetext.4 .html all
+duti -s com.sublimetext.4 .css all
+duti -s com.sublimetext.4 .ts all
+duti -s com.sublimetext.4 .tsx all
+duti -s com.sublimetext.4 .jsx all
+duti -s com.sublimetext.4 .rb all
+duti -s com.sublimetext.4 .py all
+duti -s com.sublimetext.4 .go all
 
 # Install / configure asdf plugins
 asdf plugin add awscli

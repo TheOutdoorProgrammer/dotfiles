@@ -1,7 +1,7 @@
 [user]
     signingkey = 0x7D083A8EE8BBF157
-    name = apollorion
-    email = joey@apollorion.com
+    name = TheOutdoorProgrammer
+    email = joey@theoutdoorprogrammer.com
 [commit]
     gpgsign = true
 [gpg]
@@ -51,3 +51,5 @@
 	cmd = nvim -c \"DiffviewOpen\" \"$LOCAL\" \"$REMOTE\"
 [difftool]
 	prompt = false
+[init]
+	defaultBranch = main

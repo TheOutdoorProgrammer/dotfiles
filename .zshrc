@@ -1,6 +1,14 @@
 #!/bin/zsh
+
+if [ "$TMUX" = "" ]; then
+  tmux attach -t joey || tmux new -s joey
+  return
+fi
+
 # Always do this first
 source ~/OP.sh
+
+autoload -U compinit; compinit
 
 # Homebrew Path Mac M1
 export PATH="/opt/homebrew/bin:$PATH"

@@ -125,6 +125,95 @@ git(){
       gh pr view --web
     ;;
 
+    "pull-request -o"*)
+      # Get the base branch (main or master)
+      base_branch=$(hub rev-parse --abbrev-ref origin/HEAD 2>/dev/null | sed 's|origin/||' || echo "main")
+
+      # Get the merge base
+      merge_base=$(hub merge-base HEAD origin/$base_branch 2>/dev/null || hub merge-base HEAD $base_branch)
+
+      # Get the last commit message for PR title
+      pr_title=$(hub log -1 --pretty=%s)
+
+      # Get commit log
+      commit_log=$(hub log --oneline $merge_base..HEAD)
+
+      # Get the diff
+      diff_output=$(hub diff $merge_base...HEAD)
+
+      # Create a temporary file with the context
+      context_file=$(mktemp)
+      cat > "$context_file" << EOF
+Generate a pull request description based on these changes.
+
+## Commit History:
+$commit_log
+
+## Changes:
+$diff_output
+
+IMPORTANT: Your output will be streamed to the terminal in real-time so the user can see your thinking process.
+You MUST wrap the final PR description body between <PR_DESCRIPTION_BODY> and </PR_DESCRIPTION_BODY> tags.
+Everything outside these tags will be visible to the user but NOT included in the PR.
+
+Please provide a well-structured PR description with the following sections:
+
+1. A short 1-2 sentence description of the change
+2. **Motivation** - Why this change is needed
+3. **Changes** - Bullet points of what changed
+4. **Features** (if new feature) or **Fixes** (if bug fixes) - What functionality is added/fixed
+5. **Usage** - How to use the new feature/changes (if applicable)
+6. **Documentation** - Links to relevant docs (if any, omit section if none)
+
+Use markdown formatting to make it readable. Keep it concise but informative.
+EOF
+
+      # Get PR description from Claude with progress spinner
+      echo -n "Generating PR description... "
+
+      # Disable job control messages
+      set +m
+
+      # Start spinner in background
+      (
+        spinner='⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'
+        i=0
+        while true; do
+          printf "\b${spinner:$i:1}"
+          i=$(( (i + 1) % 10 ))
+          sleep 0.1
+        done
+      ) &
+      spinner_pid=$!
+
+      # Get PR description from Claude
+      full_output=$(claude -p "$(cat $context_file)")
+
+      # Kill spinner
+      kill $spinner_pid 2>/dev/null
+      wait $spinner_pid 2>/dev/null
+      printf "\b✓\n\n"
+
+      # Re-enable job control
+      set -m
+
+      # Show the full output
+      echo "$full_output"
+      echo ""
+
+      rm "$context_file"
+
+      # Extract content between tags
+      pr_body=$(echo "$full_output" | sed -n '/<PR_DESCRIPTION_BODY>/,/<\/PR_DESCRIPTION_BODY>/p' | sed '1d;$d')
+
+      # Extract any additional flags passed after -o
+      shift 2  # Remove "pull-request" and "-o"
+      additional_flags="$@"
+
+      # Create PR with hub - separate title and body
+      hub pull-request -o -m "$pr_title" -m "$pr_body" $additional_flags
+    ;;
+
     "checkout")
        git checkout $(git branch -a | grep -ve "\*" -ve "->"  | sed 's/remotes\/origin\///' | awk '!seen[$0]++' | fzf)
     ;;
@@ -237,6 +326,42 @@ goTestFunc() {
 
 kubie() {
     [[ "$1" == "ctx" ]] && kubecm switch "${@:2}" || kubecm "$@"
+}
+
+removeFinalizers() {
+    if [[ $# -ne 2 ]]; then
+        echo "Usage: removeFinalizers <resource-type> <resource-name>"
+        echo "Examples:"
+        echo "  removeFinalizers pod my-pod"
+        echo "  removeFinalizers ns stuck-namespace"
+        echo "  removeFinalizers pvc my-pvc"
+        return 1
+    fi
+
+    local resource_type="$1"
+    local resource_name="$2"
+
+    echo "Removing finalizers from $resource_type/$resource_name..."
+    kubectl patch "$resource_type" "$resource_name" -p '{"metadata":{"finalizers":null}}' --type=merge
+}
+
+waitAndTail() {
+    local pod_name=$1
+    local container=${2:-""}
+    local container_flag=""
+    
+    if [ -n "$container" ]; then
+        container_flag="-c $container"
+    fi
+    
+    echo "Waiting for pod $pod_name to be ready..."
+    if kubectl wait --for=condition=ready pod/$pod_name --timeout=300s; then
+        echo "Pod ready! Tailing logs..."
+        kubectl logs -f $pod_name $container_flag
+    else
+        echo "Pod failed to become ready within timeout"
+        return 1
+    fi
 }
 
 source $HOME/registry-list.sh

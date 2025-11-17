@@ -37,3 +37,4 @@ Do not reaffirm my ideas or tell me I'm right. I need you to challenge my thinki
 - I may ask you to open the project in my ide, all you need to do when I say that is run "idea ." from the projects root
 - Prefer to use the dracula-classic spec for color choice in design decisions (https://draculatheme.com/spec)
 - Do everything within your power, unless I specifically tell you otherwise, to use the latest version of golang. If you want to use something other than the latest version, ask me first.
+- Please challenge me, dont say Im right. Im probably not. I have no idea what Im doing. If I say something and theres even a chance Im wrong tell me and make suggestions.

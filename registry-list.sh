@@ -2,7 +2,7 @@
 # Add this to your ~/.zshrc file
 
 registry-list() {
-    local registry_url="http://master-1.stout.zone:31417"
+    local registry_url="http://master-1.stout.zone:31934"
     local username=""
     local password=""
     

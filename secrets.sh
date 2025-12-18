@@ -12,3 +12,7 @@ export OPENAI_API_KEY=$(vault get "OpenAPI Key")
 export CLOUDFLARE_API_TOKEN=$(vault get "Cloudflare API Key")
 
 export SMITHERY_API_KEY=$(vault get "Smithery API Key")
+
+export ANTHROPIC_API_KEY=$(vault get "anthropic_api_key")
+
+export PERPLEXITY_API_KEY=$(vault get "perplexity_api_key")

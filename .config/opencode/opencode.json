@@ -5,10 +5,6 @@
       "type": "local",
       "command": ["bun", "/Users/joeystout/projects/src/github.com/fazer-ai/mcp-obsidian/dist/index.js"],
       "enabled": true,
-      "environment": {
-        "OBSIDIAN_API_KEY": "31cbb12cb2cf4809d7a2435f1d06523c82359c75602680fa45e34e91e24ba530",
-        "DANGEROUSLY_OMIT_AUTH": "true"
-      }
     }
   }
 }

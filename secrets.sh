@@ -16,3 +16,7 @@ export SMITHERY_API_KEY=$(vault get "Smithery API Key")
 export ANTHROPIC_API_KEY=$(vault get "anthropic_api_key")
 
 export PERPLEXITY_API_KEY=$(vault get "perplexity_api_key")
+
+export OBSIDIAN_API_KEY=$(vault get "Obsidian API Key")
+
+export SPACELIFT_API_TOKEN=$(spacectl profile export-token)

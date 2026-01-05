@@ -4,7 +4,15 @@
     "obsidian": {
       "type": "local",
       "command": ["bun", "/Users/joeystout/projects/src/github.com/fazer-ai/mcp-obsidian/dist/index.js"],
+      "enabled": true
+    },
+    "github": {
+      "type": "remote",
+      "url": "https://api.githubcopilot.com/mcp/",
       "enabled": true,
+      "headers": {
+        "Authorization": "Bearer {env:GITHUB_TOKEN}"
+      }
     }
   }
 }

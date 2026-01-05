@@ -364,8 +364,74 @@ waitAndTail() {
     fi
 }
 
+useAFTAccount(){
+  export AWS_ACCESS_KEY_ID=$(vault get aft-account-access-key-id)
+  export AWS_SECRET_ACCESS_KEY=$(vault get aft-account-access-key-secret)
+  export AWS_DEFAULT_REGION="us-east-2"
+  unset AWS_PROFILE
+  aws sts get-caller-identity
+}
+
+useCTAccount(){
+  export AWS_ACCESS_KEY_ID=$(vault get ct-account-access-key-id)
+  export AWS_SECRET_ACCESS_KEY=$(vault get ct-account-access-key-secret)
+  export AWS_DEFAULT_REGION="us-east-2"
+  unset AWS_PROFILE
+  aws sts get-caller-identity
+}
+
+useCloudflareAccount(){
+  export AWS_ACCESS_KEY_ID=$(vault get cloudflare-account-access-key-id)
+  export AWS_SECRET_ACCESS_KEY=$(vault get cloudflare-account-access-key-secret)
+  export AWS_ENDPOINT_URL=$(vault get cloudflare-endpoint-url)
+  export AWS_DEFAULT_REGION="auto"
+  unset AWS_PROFILE
+}
+
+unsetEndpoint(){
+  unset AWS_ENDPOINT_URL
+}
+
+deploymentCheck(){
+  kubectl get pods -A -o json | jq -r '
+  .items 
+  | group_by(.metadata.namespace + "/" + ((.metadata.ownerReferences[]? | select(.kind == "ReplicaSet") | .name | split("-")[:-1] | join("-")) // "no-deployment"))
+  | map({
+      deployment: (.[0].metadata.ownerReferences[]? | select(.kind == "ReplicaSet") | .name | split("-")[:-1] | join("-")),
+      namespace: .[0].metadata.namespace,
+      properly_distributed: ((group_by(.spec.nodeName) | map(length) | max) == 1)
+    })
+  | map(select(.deployment != null))
+  | .[]
+  | "Deployment: \(.namespace)/\(.deployment), \(.properly_distributed)"
+'
+}
+
+switchAnthropicAccount() {
+  if [[ "$1" == "personal" ]]; then
+    export ANTHROPIC_API_KEY=$(vault get "personal_anthropic_api_key")
+    echo "Using personal Claude account"
+    return
+  fi
+
+  if [[ "$1" == "work" ]]; then
+    export ANTHROPIC_API_KEY=$(vault get "anthropic_api_key")
+    echo "Using work Claude account"
+    return
+  fi
+}
+
+code() {
+  if [[ $# -eq 0 ]]; then
+    opencode --agent ask
+  else
+    opencode "$@"
+  fi
+}
+
 source $HOME/registry-list.sh
 
 # Defaults
 export AWS_DEFAULT_REGION="us-east-2"
 export AWS_PROFILE="default"
+unsetEndpoint

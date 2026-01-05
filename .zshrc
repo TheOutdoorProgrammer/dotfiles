@@ -18,6 +18,8 @@ export PATH="/usr/local/sbin:$PATH"
 export PATH="$HOME/bin:$PATH"
 # GO Path
 export PATH="$HOME/projects/bin:$PATH"
+# BUN path
+export PATH="$HOME/.bun/bin:$PATH"
 
 export BREW_PATH=$(brew --prefix)
 
@@ -77,8 +79,10 @@ gpgfix > /dev/null 2>&1
 source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
 source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
 source <(kubectl completion zsh)
-# The following lines have been added by Docker Desktop to enable Docker CLI completions.
-fpath=(/Users/apollorion/.docker/completions $fpath)
-autoload -Uz compinit
-compinit
-# End of Docker CLI completions
+
+# bun completions
+[ -s "/Users/joeystout/.bun/_bun" ] && source "/Users/joeystout/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"

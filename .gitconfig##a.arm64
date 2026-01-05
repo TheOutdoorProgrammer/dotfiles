@@ -53,3 +53,10 @@
 	prompt = false
 [init]
 	defaultBranch = main
+[credential]
+	UseHttpPath = true
+	helper =
+	helper = !aws codecommit credential-helper $@
+[credential "https://git-codecommit.us-east-2.amazonaws.com"]
+	helper = !aws codecommit credential-helper $@
+	UseHttpPath = true

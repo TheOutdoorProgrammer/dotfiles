@@ -329,6 +329,11 @@ Example:
 	[[2026-01-08-azure-autoscaling]]
 ```
 
+**Card Consolidation:**
+Use your best judgment to combine related tasks into a single card when they're part of the same logical workflow. Trivial follow-ups like "notify X with findings" should usually be folded into the parent task, not a separate card.
+
+**IMPORTANT:** When adding cards to the board, add ALL cards in a single Edit operation. This allows the user to review and deny if they want tasks combined differently.
+
 **How to update:**
 1. Use the native `Read` tool: `~/projects/src/github.com/theoutdoorprogrammer/obsidian/Work/Board.md`
 2. Find the appropriate column heading in the markdown (e.g., `## To Do / High Prio`)

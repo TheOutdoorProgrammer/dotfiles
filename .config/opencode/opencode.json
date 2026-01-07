@@ -10,7 +10,14 @@
         "obsidian_obsidian_simple_search": "allow",
         "obsidian_obsidian_list_vault_directory": "allow",
         "obsidian_obsidian_delete_file": "ask",
-        "obsidian_obsidian_delete_active": "ask"
+        "obsidian_obsidian_delete_active": "ask",
+        "bash": {
+          "git add *": "allow",
+          "git commit *": "allow",
+          "git status*": "allow",
+          "git diff*": "allow",
+          "*": "ask"
+        }
       }
     }
   },

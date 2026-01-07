@@ -22,7 +22,15 @@ When the user indicates they're starting a meeting (e.g., "I'm in a meeting with
    - Search for any topic keywords mentioned
    - Search for tags in frontmatter (e.g., `tags: [jubran]` or `tags: [github-actions]`)
 
-2. **If relevant notes are found**, briefly summarize:
+2. **If highly relevant notes are found, fetch the full content:**
+   - Use `obsidian_obsidian_get_file` to retrieve the complete note(s)
+   - Store this context internally - you'll use it during `/probe` to:
+     - Reference prior decisions: "Last time you decided X, does that still hold?"
+     - Surface unresolved items: "You had an open question about Y - was that resolved?"
+     - Connect discussions: "This relates to what you discussed with Z about..."
+   - Limit to 2-3 most relevant notes to avoid context overload
+
+3. **If relevant notes are found**, briefly summarize:
    ```
    Got it - meeting with [Customer/Person]. I'm ready to capture notes.
    
@@ -37,7 +45,7 @@ When the user indicates they're starting a meeting (e.g., "I'm in a meeting with
    Just drop notes as we go. I'll help you extract the important bits.
    ```
 
-3. **If no relevant notes found**, proceed normally:
+4. **If no relevant notes found**, proceed normally:
    ```
    Got it - meeting with [Customer/Person]. I'm ready to capture notes.
    
@@ -58,7 +66,19 @@ When the user indicates they're starting a meeting (e.g., "I'm in a meeting with
 - **Mentally note topics for tagging later**
 
 ### PROBE Mode (Triggered by `/probe`)
-Generate **3-4 questions** to surface hidden information. Draw from these categories:
+Generate **3-4 questions** to surface hidden information.
+
+**IMPORTANT: Use prior context from fetched notes to inform your questions.**
+
+If you loaded relevant notes during session initialization, leverage them:
+- "Last time with {person}, you decided {X}. Is that still the plan, or has something changed?"
+- "In your previous meeting about {topic}, there was an open question about {Y}. Did that get resolved?"
+- "You mentioned {thing} before - how does today's discussion connect to that?"
+- "I see you previously discussed {related topic} with {other person}. Should we align with that approach?"
+
+This makes your questions contextually aware and helps surface continuity issues or forgotten threads.
+
+**Draw from these categories:**
 
 **Technical:**
 - Architecture implications, integration points, failure modes
@@ -236,6 +256,41 @@ Please open Obsidian and let me know when it's ready. I'll save the notes then.
 ```
 
 Wait for user confirmation, then retry the Obsidian MCP call.
+
+#### Step 7: Git Commit the Note
+
+After successfully saving to Obsidian, commit the note to git:
+
+1. **Change to the Obsidian vault directory:**
+   ```bash
+   cd ~/projects/src/github.com/theoutdoorprogrammer/obsidian
+   ```
+
+2. **Stage the specific note file:**
+   ```bash
+   git add "Work/Notes/Meetings/{path-to-note}.md"
+   ```
+   
+   Use the exact path from the Obsidian save operation.
+
+3. **Commit with a descriptive message:**
+   ```bash
+   git commit -m "meeting notes: {brief description}"
+   ```
+   
+   Commit message format:
+   - New note: `meeting notes: {topic} with {person/customer}`
+   - Updated note: `meeting notes: update {topic} - {brief change summary}`
+   
+   Examples:
+   - `meeting notes: azure autoscaling with Jubran`
+   - `meeting notes: update azure autoscaling - added Q2 timeline decision`
+
+4. **Do NOT push** - only commit locally. The user will push when ready.
+
+**If git operations fail:**
+- Report the error but don't block - the note is already saved in Obsidian
+- Suggest the user run the git commands manually
 
 ## Obsidian Note Template
 

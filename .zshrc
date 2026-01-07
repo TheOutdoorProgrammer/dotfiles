@@ -61,6 +61,7 @@ alias kunhealthy="kubectl get -o wide pods -A | grep -v \"Completed|1/1|2/2|3/3|
 alias sublime="subl"
 alias k="kubectl"
 alias vim="nvim"
+alias code="opencode"
 
 # Personal Stuff
 source ~/functions.sh
@@ -86,3 +87,6 @@ source <(kubectl completion zsh)
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
+
+# opencode
+export PATH=/Users/joeystout/.opencode/bin:$PATH

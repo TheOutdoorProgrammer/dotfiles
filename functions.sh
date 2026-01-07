@@ -336,22 +336,6 @@ switchAnthropicAccount() {
   fi
 }
 
-code() {
-  if [[ "$1" == "-r" ]]; then
-    # List sessions, select with fzf (keep header, remove separator line), extract session ID, and resume
-    local session_line=$(opencode session list | sed '2d' | fzf --header-lines=1)
-    if [[ -n "$session_line" ]]; then
-      # Parse session ID from the line (assuming format like "session-id: ...")
-      local session_id=$(echo "$session_line" | awk '{print $1}')
-      opencode -s "$session_id"
-    fi
-  elif [[ $# -eq 0 ]]; then
-    opencode --agent ask
-  else
-    opencode "$@"
-  fi
-}
-
 source $HOME/registry-list.sh
 
 # Defaults

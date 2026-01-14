@@ -3,7 +3,16 @@ description: Interactive agent that asks for approval before every file edit and
 mode: all
 permission:
   edit: ask
-  bash: ask
+  bash:
+    "*": ask
+    "git*": allow
+    "hub*": allow
+    "grep*": allow
+    "sed*": allow
+    "which*": allow
+    "gh*": allow
+    "cat*": allow
+    "mktemp*": allow
   webfetch: allow
   external_directory: ask
   doom_loop: ask

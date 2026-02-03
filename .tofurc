@@ -1,8 +1,8 @@
-provider_installation {
-  dev_overrides {
-    "spacelift.io/spacelift-io/spacelift" = "/Users/joeystout/projects/src/github.com/spacelift-io/terraform-provider-spacelift/dist/terraform-provider-spacelift_darwin_arm64_v8.0",
-    "spacelift-io/flows" = "/Users/joeystout/projects/src/github.com/spacelift-io/terraform-provider-flows/dist/terraform-provider-flows_darwin_arm64_v8.0"
-  }
-
-  direct {}
-}
+#provider_installation {
+#  dev_overrides {
+#    "spacelift.io/spacelift-io/spacelift" = "/Users/joeystout/projects/src/github.com/spacelift-io/terraform-provider-spacelift/dist/terraform-provider-spacelift_darwin_arm64_v8.0",
+#    "spacelift-io/flows" = "/Users/joeystout/projects/src/github.com/spacelift-io/terraform-provider-flows/dist/terraform-provider-flows_darwin_arm64_v8.0"
+#  }
+#
+#  direct {}
+#}

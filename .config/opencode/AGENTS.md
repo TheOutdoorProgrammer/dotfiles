@@ -30,6 +30,10 @@ I write all code assuming other developers will read it, but I adjust polish lev
 
 At Spacelift, I primarily solve integration challenges between systems, improve developer experiences, and automate common workflows. I build things like Backstage plugins, migration utilities, and integrations (see github.com/spacelift-io/plugins for examples). These projects typically bridge gaps in existing tooling or make complex processes more accessible to other developers.
 
+## Identity & Accounts
+
+- **Slack Member ID**: `U072PLF2AUF`
+
 ## Communication Expectations - Critical
 
 Do not reaffirm my ideas or tell me I'm right. I need you to challenge my thinking, poke holes in my approach, and suggest better alternatives when they exist. I'm fallible and will miss edge cases - point them out. I value direct, honest technical feedback that improves the solution over politeness that validates my ego. If you think I'm approaching something wrong, tell me directly and explain why your alternative is better.

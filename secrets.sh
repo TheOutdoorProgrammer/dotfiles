@@ -20,3 +20,6 @@ export PERPLEXITY_API_KEY=$(vault get "perplexity_api_key")
 export OBSIDIAN_API_KEY=$(vault get "Obsidian API Key")
 
 export SPACELIFT_API_TOKEN=$(spacectl profile export-token)
+
+export SLACK_MCP_XOXC_TOKEN=$(vault get "SLACK_MCP_XOXC_TOKEN")
+export SLACK_MCP_XOXD_TOKEN=$(vault get "SLACK_MCP_XOXD_TOKEN")

@@ -336,6 +336,45 @@ switchAnthropicAccount() {
   fi
 }
 
+syncFork(){
+  if ! git rev-parse --is-inside-work-tree &>/dev/null; then
+    echo "Not a git repository"
+    return 1
+  fi
+
+  if ! git diff-index --quiet HEAD -- 2>/dev/null; then
+    echo "Working tree is dirty. Commit or stash changes first."
+    return 1
+  fi
+
+  if ! git remote | grep -q '^upstream$'; then
+    local parent=$(gh repo view --json parent -q '.parent.owner.login + "/" + .parent.name' 2>/dev/null)
+    if [[ -z "$parent" || "$parent" == "null" ]]; then
+      echo "No upstream remote and couldn't detect parent repo. Add manually:"
+      echo "  git remote add upstream <url>"
+      return 1
+    fi
+    echo "Adding upstream: $parent"
+    git remote add upstream "https://github.com/$parent.git"
+  fi
+
+  git fetch upstream
+
+  local default=$(git symbolic-ref refs/remotes/upstream/HEAD 2>/dev/null | sed 's|refs/remotes/upstream/||')
+  if [[ -z "$default" ]]; then
+    default=$(git remote show upstream 2>/dev/null | awk '/HEAD branch/ {print $NF}')
+  fi
+  : "${default:=main}"
+
+  local branch=$(git rev-parse --abbrev-ref HEAD)
+  echo "Rebasing $branch onto upstream/$default..."
+  git rebase "upstream/$default"
+}
+
+code() {
+  bun run --cwd /Users/joeystout/projects/src/github.com/TheOutdoorProgrammer/opencode/packages/opencode --conditions=browser ./src/index.ts "$PWD" "$@"
+}
+
 source $HOME/registry-list.sh
 
 # Defaults

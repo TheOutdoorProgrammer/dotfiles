@@ -17,5 +17,6 @@ Follow the SYNTHESIZE mode workflow:
    - git commit with message format: "meeting notes: {topic} with {person}"
    - Do NOT push
 7. If there are action items assigned to me, add them to Work/Board.md under the appropriate priority column with a link to the note
+   - Joey works from the bottom of the list to the top. Place in appropriate column and sort by priority (high at the bottom, low at the top)
 
 If Obsidian MCP fails, prompt to open Obsidian - do not fall back to writing files directly.

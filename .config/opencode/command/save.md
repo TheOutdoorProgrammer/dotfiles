@@ -10,7 +10,7 @@ Follow the SYNTHESIZE mode workflow:
 2. If same customer AND same topic as existing note → append to existing
 3. If different topic → create new note with appropriate tags
 4. Generate tags for people, technologies, topics, and meeting type
-5. Save to Obsidian using the appropriate method (put_file for new, post_file for append) - do NOT preview first, the tool permission prompt will show the content
+5. Save to the Obsidian vault by writing directly to the filesystem at ~/projects/src/github.com/theoutdoorprogrammer/obsidian using the Write tool (for new files) or Edit tool (for appending to existing). Do NOT use Obsidian MCP write tools — they are disabled.
 6. After saving, commit the note to git:
    - cd ~/projects/src/github.com/theoutdoorprogrammer/obsidian
    - git add the specific note file
@@ -18,4 +18,4 @@ Follow the SYNTHESIZE mode workflow:
    - Do NOT push
 7. If there are action items assigned to me, add them to Work/Board.md under the appropriate priority column with a link to the note
 
-If Obsidian MCP fails, prompt to open Obsidian - do not fall back to writing files directly.
+Always write notes using the filesystem Write/Edit tools. Do NOT use Obsidian MCP write tools (put_file, post_file, etc.) — they are globally disabled.

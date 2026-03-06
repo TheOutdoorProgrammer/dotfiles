@@ -1,10 +1,5 @@
 #!/bin/zsh
 
-if [ "$TMUX" = "" ]; then
-  tmux attach -t joey || tmux new -s joey
-  return
-fi
-
 # Always do this first
 source ~/OP.sh
 
@@ -25,7 +20,7 @@ export BREW_PATH=$(brew --prefix)
 
 # GPG and SSH config
 export GPG_TTY="$(tty)"
-export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
+export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
 
 # OHMYZSH and POWERLEVEL10K Config
 ZSH_DISABLE_COMPFIX=true
@@ -51,7 +46,6 @@ export BAT_THEME="Dracula"
 HISTFILE=~/.histfile
 HISTSIZE=1000000
 SAVEHIST=1000000
-export GPG_TTY=$(tty)
 
 # Aliases
 alias ll="ls -lah"
@@ -61,7 +55,7 @@ alias kunhealthy="kubectl get -o wide pods -A | grep -v \"Completed|1/1|2/2|3/3|
 alias sublime="subl"
 alias k="kubectl"
 alias vim="nvim"
-
+alias code="opencode"
 
 # Personal Stuff
 source ~/functions.sh
@@ -73,9 +67,8 @@ export BUILDKIT_PROGRESS=plain
 export PATH="/Applications/Sublime Text.app/Contents/SharedSupport/bin:$PATH"
 export POETRY_VIRTUALENVS_PREFER_ACTIVE_PYTHON=true
 
-# run after function.sh is loaded
-# make sure I dont have to do this a ton
-gpgfix > /dev/null 2>&1
+# Update gpg-agent TTY without killing the agent (safe for multi-tab)
+gpg-connect-agent updatestartuptty /bye > /dev/null 2>&1
 
 source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
 source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
@@ -100,3 +93,4 @@ export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin
 ### MANAGED BY RANCHER DESKTOP START (DO NOT EDIT)
 export PATH="/Users/joeystout/.rd/bin:$PATH"
 ### MANAGED BY RANCHER DESKTOP END (DO NOT EDIT)
+export PATH="$HOME/.local/bin:$PATH"

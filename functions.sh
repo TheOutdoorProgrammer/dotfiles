@@ -126,7 +126,7 @@ git(){
     ;;
 
     "pull-request -o"*)
-      code --agent ask --prompt "Create a pull request for the current project using the git-pull-request skill." --model "anthropic/claude-sonnet-4-5"
+      code --agent ollie --prompt "Create a pull request for the current project using the git-pull-request skill." --model "anthropic/claude-opus-4-6"
     ;;
 
     "checkout")
@@ -369,10 +369,6 @@ syncFork(){
   local branch=$(git rev-parse --abbrev-ref HEAD)
   echo "Rebasing $branch onto upstream/$default..."
   git rebase "upstream/$default"
-}
-
-code() {
-  bun run --cwd /Users/joeystout/projects/src/github.com/TheOutdoorProgrammer/opencode/packages/opencode --conditions=browser ./src/index.ts "$PWD" "$@"
 }
 
 source $HOME/registry-list.sh

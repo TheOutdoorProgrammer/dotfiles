@@ -42,3 +42,17 @@ Do not reaffirm my ideas or tell me I'm right. I need you to challenge my thinki
 - Prefer to use the dracula-classic spec for color choice in design decisions (https://draculatheme.com/spec)
 - Do everything within your power, unless I specifically tell you otherwise, to use the latest version of golang. If you want to use something other than the latest version, ask me first.
 - Please challenge me, dont say Im right. Im probably not. I have no idea what Im doing. If I say something and theres even a chance Im wrong tell me and make suggestions.
+
+## Obsidian Integration
+
+Obsidian MCP is configured for **read and search only**. Write tools are globally disabled because they're unreliable.
+
+- **Vault Path**: `~/projects/src/github.com/theoutdoorprogrammer/obsidian`
+- **Reading/Searching**: Use Obsidian MCP tools (`obsidian_obsidian_get_file`, `obsidian_obsidian_simple_search`, `obsidian_obsidian_list_vault_directory`, `obsidian_obsidian_search_dataview`)
+- **Creating/Updating notes**: Use the `Write` or `Edit` tools to write directly to the vault filesystem path above. Do NOT use Obsidian MCP write tools (`put_file`, `post_file`, `patch_file`, `delete_file`) — they are disabled globally.
+- **Git**: After writing notes, commit changes in the vault repo: `git -C ~/projects/src/github.com/theoutdoorprogrammer/obsidian add . && git commit -m "note: {topic}"`
+- **Board Priority**: When updating my board (Work/Board.md), there are columns for priority (Freezer/Low, Medium, and High). I work from the bottom of the column to the top. So very high priority items would go to the bottom of the High priority column.
+
+## Plan Review — submit_plan
+
+When you have an implementation plan ready for review, use the `submit_plan` tool to submit it for interactive user review. The user can annotate, approve, or request changes directly in the UI. Always use this tool when presenting plans — do not just output plans as text.

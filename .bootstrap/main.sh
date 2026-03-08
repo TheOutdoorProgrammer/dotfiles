@@ -81,6 +81,9 @@ defaults -currentHost write -g com.apple.mouse.scaling -float "3.0" # Speed up t
 # Install help command
 gh extension install github/gh-copilot
 
+# Install Slack CLI
+curl -fsSL https://raw.githubusercontent.com/stablyai/agent-slack/main/install.sh | sh
+
 # OnePassword Check
 if [ ! -f ~/OP.sh ]; then
   echo "export OP_SERVICE_ACCOUNT_TOKEN=\"\"" > ~/OP.sh

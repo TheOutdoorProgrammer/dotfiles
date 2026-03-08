@@ -1,25 +1,33 @@
 #!/bin/zsh
 
-# github token
-export GITHUB_TOKEN=$(vault get "GitHub Personal Access Token")
+# Fetch all secrets in parallel to avoid serial 1Password CLI latency
+setopt LOCAL_OPTIONS NO_MONITOR
+_secrets_tmp=$(mktemp -d)
 
-# dockerhub
+vault get "GitHub Personal Access Token"  > "$_secrets_tmp/github_token" &
+vault get "DockerHub"                     > "$_secrets_tmp/dockerhub" &
+vault get "OpenAPI Key"                   > "$_secrets_tmp/openai" &
+vault get "Cloudflare API Key"            > "$_secrets_tmp/cloudflare" &
+vault get "Smithery API Key"              > "$_secrets_tmp/smithery" &
+vault get "anthropic_api_key"             > "$_secrets_tmp/anthropic" &
+vault get "perplexity_api_key"            > "$_secrets_tmp/perplexity" &
+vault get "Obsidian API Key"              > "$_secrets_tmp/obsidian" &
+vault get "SLACK_WORKSPACE_URL"           > "$_secrets_tmp/slack" &
+spacectl profile export-token             > "$_secrets_tmp/spacelift" &
+
+wait
+
+export GITHUB_TOKEN=$(<"$_secrets_tmp/github_token")
 export DOCKERHUB_USERNAME="apollorion"
-export DOCKERHUB_PASSWORD=$(vault get "DockerHub")
+export DOCKERHUB_PASSWORD=$(<"$_secrets_tmp/dockerhub")
+export OPENAI_API_KEY=$(<"$_secrets_tmp/openai")
+export CLOUDFLARE_API_TOKEN=$(<"$_secrets_tmp/cloudflare")
+export SMITHERY_API_KEY=$(<"$_secrets_tmp/smithery")
+export ANTHROPIC_API_KEY=$(<"$_secrets_tmp/anthropic")
+export PERPLEXITY_API_KEY=$(<"$_secrets_tmp/perplexity")
+export OBSIDIAN_API_KEY=$(<"$_secrets_tmp/obsidian")
+export SPACELIFT_API_TOKEN=$(<"$_secrets_tmp/spacelift")
+export SLACK_WORKSPACE_URL=$(<"$_secrets_tmp/slack")
 
-export OPENAI_API_KEY=$(vault get "OpenAPI Key")
-
-export CLOUDFLARE_API_TOKEN=$(vault get "Cloudflare API Key")
-
-export SMITHERY_API_KEY=$(vault get "Smithery API Key")
-
-export ANTHROPIC_API_KEY=$(vault get "anthropic_api_key")
-
-export PERPLEXITY_API_KEY=$(vault get "perplexity_api_key")
-
-export OBSIDIAN_API_KEY=$(vault get "Obsidian API Key")
-
-export SPACELIFT_API_TOKEN=$(spacectl profile export-token)
-
-export SLACK_MCP_XOXC_TOKEN=$(vault get "SLACK_MCP_XOXC_TOKEN")
-export SLACK_MCP_XOXD_TOKEN=$(vault get "SLACK_MCP_XOXD_TOKEN")
+rm -rf "$_secrets_tmp"
+unset _secrets_tmp

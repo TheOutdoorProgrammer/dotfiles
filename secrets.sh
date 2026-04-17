@@ -13,6 +13,7 @@ vault get "anthropic_api_key"             > "$_secrets_tmp/anthropic" &
 vault get "perplexity_api_key"            > "$_secrets_tmp/perplexity" &
 vault get "Obsidian API Key"              > "$_secrets_tmp/obsidian" &
 vault get "SLACK_WORKSPACE_URL"           > "$_secrets_tmp/slack" &
+vault get "GEMINI_API_KEY"                > "$_secrets_tmp/gemini" &
 spacectl profile export-token             > "$_secrets_tmp/spacelift" &
 
 wait
@@ -28,6 +29,7 @@ export PERPLEXITY_API_KEY=$(<"$_secrets_tmp/perplexity")
 export OBSIDIAN_API_KEY=$(<"$_secrets_tmp/obsidian")
 export SPACELIFT_API_TOKEN=$(<"$_secrets_tmp/spacelift")
 export SLACK_WORKSPACE_URL=$(<"$_secrets_tmp/slack")
+export GEMINI_API_KEY=$(<"$_secrets_tmp/gemini")
 
 rm -rf "$_secrets_tmp"
 unset _secrets_tmp

@@ -16,28 +16,6 @@
     }
   },
   "agent": {
-    "meeting-assistant": {
-      "permission": {
-        "obsidian_obsidian_get_file": "allow",
-        "obsidian_obsidian_simple_search": "allow",
-        "obsidian_obsidian_list_vault_directory": "allow",
-        "obsidian_obsidian_put_file": "deny",
-        "obsidian_obsidian_patch_file": "deny",
-        "obsidian_obsidian_post_file": "deny",
-        "obsidian_obsidian_delete_file": "deny",
-        "obsidian_obsidian_delete_active": "deny",
-        "read": "allow",
-        "edit": "ask",
-        "write": "ask",
-        "bash": {
-          "git add *": "allow",
-          "git commit *": "allow",
-          "git status*": "allow",
-          "git diff*": "allow",
-          "*": "ask"
-        }
-      }
-    },
     "ollie": {
       "model": "anthropic/claude-opus-4-6",
       "color": "#50FA7B",
@@ -45,37 +23,47 @@
         "github_*": false,
         "notion_*": false,
         "google-calendar_*": false,
-        "slack_*": false,
-        "data-fairy_*": false
+        "granola_*": false
       }
     },
-    "spacelift": {
-      "tools": {
-        "google-calendar_*": false,
-        "slack_*": false
-      }
+    "build": {
+      "mode": "subagent",
+      "hidden": true
+    },
+    "plan": {
+      "mode": "subagent",
+      "hidden": true
     },
     "reviewer": {
+      "mode": "subagent",
+      "hidden": true,
       "tools": {
         "notion_*": false,
         "google-calendar_*": false,
-        "slack_*": false,
-        "data-fairy_*": false
+        "granola_*": false
       }
+    },
+    "worker": {
+      "description": "General-purpose subagent for parallel data gathering and multi-step subtasks",
+      "mode": "subagent",
+      "hidden": true,
+      "model": "anthropic/claude-sonnet-4-6"
     }
+  },
+  "permission": {
+    "task": "allow",
+    "question": "allow"
   },
   "tools": {
     "obsidian_obsidian_put_*": false,
     "obsidian_obsidian_post_*": false,
     "obsidian_obsidian_patch_*": false,
     "obsidian_obsidian_delete_*": false,
-    "obsidian_obsidian_execute_command": false,
-    "cartogopher_*": false
+    "obsidian_obsidian_execute_command": false
   },
   "plugin": [
     "@plannotator/opencode@latest",
     "opencode-pty",
-    "oh-my-opencode@latest",
     "opencode-antigravity-auth@1.6.0",
     "opencode-openai-codex-auth"
   ],
@@ -83,11 +71,6 @@
     "~/.config/opencode/plugin/shell-strategy/shell_strategy.md"
   ],
   "mcp": {
-    "data-fairy": {
-      "type": "remote",
-      "url": "https://mcp.spacelift.dev/mcp",
-      "enabled": true
-    },
     "obsidian": {
       "type": "local",
       "command": [
@@ -102,21 +85,6 @@
       "enabled": true,
       "headers": {
         "Authorization": "Bearer {env:GITHUB_TOKEN}"
-      }
-    },
-    "slack": {
-      "type": "local",
-      "command": [
-        "npx",
-        "-y",
-        "slack-mcp-server@latest",
-        "--transport",
-        "stdio"
-      ],
-      "enabled": true,
-      "environment": {
-        "SLACK_MCP_XOXC_TOKEN": "{env:SLACK_MCP_XOXC_TOKEN}",
-        "SLACK_MCP_XOXD_TOKEN": "{env:SLACK_MCP_XOXD_TOKEN}"
       }
     },
     "notion": {
@@ -138,6 +106,30 @@
       "environment": {
         "GOOGLE_OAUTH_CREDENTIALS": "/Users/joeystout/Documents/google-mcp-creds.json"
       }
+    },
+    "context7": {
+      "type": "remote",
+      "url": "https://mcp.context7.com/mcp",
+      "enabled": true
+    },
+    "grep": {
+      "type": "remote",
+      "url": "https://mcp.grep.app",
+      "enabled": true
+    },
+    "websearch": {
+      "type": "remote",
+      "url": "https://mcp.exa.ai/mcp",
+      "enabled": true
+    },
+    "granola": {
+      "type": "local",
+      "command": [
+        "npx",
+        "mcp-remote",
+        "https://mcp.granola.ai/mcp"
+      ],
+      "enabled": true
     }
   },
   "provider": {

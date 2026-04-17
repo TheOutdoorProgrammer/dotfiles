@@ -34,9 +34,20 @@ At Spacelift, I primarily solve integration challenges between systems, improve 
 
 - **Slack Member ID**: `U072PLF2AUF`
 
-## Slack — CRITICAL Safety Rule
+## Slack Integration
 
-**NEVER use `agent-slack message send` to post messages on my behalf.** This is non-negotiable. Always use `agent-slack message draft` to open the browser-based draft editor so I can review, edit, and send the message myself. No exceptions — even for "hello world" or test messages. If `draft` fails for technical reasons, stop and tell me instead of falling back to `send`.
+Slack access is available via the `agent-slack` skill. Load it when you need to interact with Slack.
+
+**Capabilities:**
+- Read messages, threads, and channel history
+- Search messages and files across Slack
+- Draft messages (browser-based editor)
+- Browse channels, look up users, download attachments
+- Add/remove reactions, edit/delete own messages
+
+**CRITICAL Safety Rule:** **NEVER use `agent-slack message send` to post messages on my behalf.** This is non-negotiable. Always use `agent-slack message draft` to open the browser-based draft editor so I can review, edit, and send the message myself. No exceptions — even for "hello world" or test messages. If `draft` fails for technical reasons, stop and tell me instead of falling back to `send`.
+
+**Content Filtering:** When reading or summarizing Slack messages, only surface messages with substantive work content — status updates, decisions, blockers, or action items. Skip casual conversation and anything without clear work signal.
 
 ## Communication Expectations - Critical
 
@@ -55,7 +66,10 @@ Obsidian MCP is configured for **read and search only**. Write tools are globall
 - **Reading/Searching**: Use Obsidian MCP tools (`obsidian_obsidian_get_file`, `obsidian_obsidian_simple_search`, `obsidian_obsidian_list_vault_directory`, `obsidian_obsidian_search_dataview`)
 - **Creating/Updating notes**: Use the `Write` or `Edit` tools to write directly to the vault filesystem path above. Do NOT use Obsidian MCP write tools (`put_file`, `post_file`, `patch_file`, `delete_file`) — they are disabled globally.
 - **Git**: After writing notes, commit changes in the vault repo: `git -C ~/projects/src/github.com/theoutdoorprogrammer/obsidian add . && git commit -m "note: {topic}"`
-- **Board Priority**: When updating my board (Work/Board.md), there are columns for priority (Freezer/Low, Medium, and High). I work from the bottom of the column to the top. So very high priority items would go to the bottom of the High priority column.
+- **Board Priority**: When updating my board (Board.md at vault root), there are columns for priority (Freezer/Low, Medium, and High). I work from the bottom of the column to the top. So very high priority items would go to the bottom of the High priority column.
+- **Board cards are pointers, not notebooks.** A card should be a short title + at most a Slack link and/or an Obsidian `[[note-link]]`. Status updates, context, and detail belong in the linked note — never on the card itself.
+- **Wikilinks must be absolute paths** (e.g. `[[Work/Notes/AFT]]`, not `[[AFT]]`). This makes notes findable across the vault. If you encounter a dead or ambiguous wikilink, ask Joey to locate the correct file before updating it.
+- **GitHub PR closing requires explicit permission.** Never close a PR on GitHub without first asking Joey for approval. When proposing to close a PR, include the comment you plan to leave so Joey can review it before you act.
 
 ## Plan Review — submit_plan
 

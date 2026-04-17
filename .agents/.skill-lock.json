@@ -1,0 +1,67 @@
+{
+  "version": 3,
+  "skills": {
+    "agent-slack": {
+      "source": "stablyai/agent-slack",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/stablyai/agent-slack.git",
+      "skillPath": "skills/agent-slack/SKILL.md",
+      "skillFolderHash": "ccf5bbbc721c631c031c547fa97d974774deddda",
+      "installedAt": "2026-03-08T00:27:53.689Z",
+      "updatedAt": "2026-03-08T00:27:53.689Z"
+    },
+    "find-skills": {
+      "source": "vercel-labs/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/vercel-labs/skills.git",
+      "skillPath": "skills/find-skills/SKILL.md",
+      "skillFolderHash": "c2f31172b6f256272305a5e6e7228b258446899f",
+      "installedAt": "2026-03-08T00:27:59.018Z",
+      "updatedAt": "2026-03-08T00:27:59.018Z"
+    },
+    "slidev": {
+      "source": "antfu/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/antfu/skills.git",
+      "skillPath": "skills/slidev/SKILL.md",
+      "skillFolderHash": "484dbdd960c714d80b5ddca7056cb788b0afbfe1",
+      "installedAt": "2026-03-25T13:52:47.668Z",
+      "updatedAt": "2026-03-25T13:52:47.668Z"
+    },
+    "nano-banana-pro": {
+      "source": "intellectronica/agent-skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/intellectronica/agent-skills.git",
+      "skillPath": "skills/nano-banana-pro/SKILL.md",
+      "skillFolderHash": "eea680c3ebf9b8ae10ed99ea457f27af2bc05b19",
+      "installedAt": "2026-03-26T19:56:20.054Z",
+      "updatedAt": "2026-03-26T19:56:20.054Z"
+    },
+    "agent-browser": {
+      "source": "vercel-labs/agent-browser",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/vercel-labs/agent-browser.git",
+      "skillPath": "skills/agent-browser/SKILL.md",
+      "skillFolderHash": "121eecacd86c0aab06aef5cd4663e80c5397cd41",
+      "installedAt": "2026-04-17T15:20:51.485Z",
+      "updatedAt": "2026-04-17T15:20:51.485Z"
+    }
+  },
+  "dismissed": {
+    "findSkillsPrompt": true
+  },
+  "lastSelectedAgents": [
+    "amp",
+    "antigravity",
+    "cline",
+    "codex",
+    "cursor",
+    "deepagents",
+    "firebender",
+    "gemini-cli",
+    "github-copilot",
+    "kimi-cli",
+    "opencode",
+    "warp"
+  ]
+}

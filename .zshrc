@@ -31,6 +31,8 @@ export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
 
 # OHMYZSH and POWERLEVEL10K Config
 ZSH_DISABLE_COMPFIX=true
+fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src
+autoload -U compinit && compinit
 export TERM="xterm-256color"
 export ZSH="/Users/$(whoami)/.oh-my-zsh"
 source $ZSH/oh-my-zsh.sh
@@ -101,3 +103,9 @@ export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin
 export PATH="/Users/joeystout/.rd/bin:$PATH"
 ### MANAGED BY RANCHER DESKTOP END (DO NOT EDIT)
 export PATH="$HOME/.local/bin:$PATH"
+export OPENCODE_EXPERIMENTAL_OUTPUT_TOKEN_MAX=16384
+
+# OpenCode token aliases
+alias oc='opencode'                                           # Default (16k)
+alias oc-quick='OPENCODE_EXPERIMENTAL_OUTPUT_TOKEN_MAX=4096 opencode'   # Quick responses (4k)
+alias oc-long='OPENCODE_EXPERIMENTAL_OUTPUT_TOKEN_MAX=32000 opencode'   # Long outputs (32k)

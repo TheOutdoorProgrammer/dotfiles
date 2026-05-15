@@ -45,6 +45,15 @@
       "skillFolderHash": "121eecacd86c0aab06aef5cd4663e80c5397cd41",
       "installedAt": "2026-04-17T15:20:51.485Z",
       "updatedAt": "2026-04-17T15:20:51.485Z"
+    },
+    "humanizer": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/softaworks/agent-toolkit.git",
+      "skillPath": "skills/humanizer/SKILL.md",
+      "skillFolderHash": "004c1998fffe4d5cd4535123d65cf9fb1a107b64",
+      "installedAt": "2026-04-24T14:40:10.493Z",
+      "updatedAt": "2026-04-24T14:40:10.493Z"
     }
   },
   "dismissed": {

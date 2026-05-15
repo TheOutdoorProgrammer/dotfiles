@@ -4,6 +4,13 @@
   "experimental": {
     "mcp_lazy": true
   },
+  "compaction": {
+    "auto": true,
+    "prune": true,
+    "reserved": 16384,
+    "tail_turns": 3,
+    "preserve_recent_tokens": 4000
+  },
   "lsp": {
     "marksman": {
       "command": [
@@ -17,7 +24,7 @@
   },
   "agent": {
     "ollie": {
-      "model": "litellm/stout/claude-opus-4-7",
+      "model": "anthropic/claude-opus-4-6",
       "color": "#50FA7B",
       "tools": {
         "notion_*": false,
@@ -45,7 +52,7 @@
       "description": "General-purpose subagent for parallel data gathering and multi-step subtasks",
       "mode": "subagent",
       "hidden": true,
-      "model": "litellm/stout/claude-sonnet-4-6"
+      "model": "anthropic/claude-sonnet-4-6"
     }
   },
   "permission": {
@@ -157,293 +164,25 @@
     }
   },
   "provider": {
-    "litellm": {
+    "anthropic": {
       "npm": "@ai-sdk/openai-compatible",
-      "name": "LiteLLM",
       "options": {
         "baseURL": "https://ai.stout.zone/v1",
         "apiKey": "{env:LITELLM_API_KEY}"
-      },
-      "models": {
-        "stout/claude-opus-4-7": {
-          "name": "Claude Opus 4.7",
-          "maxTokens": 128000,
-          "contextLength": 1000000,
-          "cost": {
-            "input": 5,
-            "output": 25,
-            "cache": {
-              "read": 0.5,
-              "write": 6.25
-            }
-          }
-        },
-        "stout/claude-opus-4-6": {
-          "name": "Claude Opus 4.6",
-          "cost": {
-            "input": 0.005,
-            "output": 0.025,
-            "cache": {
-              "read": 0.0005,
-              "write": 0.00625
-            }
-          }
-        },
-        "stout/claude-sonnet-4-6": {
-          "name": "Claude Sonnet 4.6",
-          "cost": {
-            "input": 0.003,
-            "output": 0.015,
-            "cache": {
-              "read": 0.0003,
-              "write": 0.00375
-            }
-          }
-        },
-        "stout/claude-sonnet-4-5": {
-          "name": "Claude Sonnet 4.5",
-          "cost": {
-            "input": 0.003,
-            "output": 0.015,
-            "cache": {
-              "read": 0.0003,
-              "write": 0.00375
-            }
-          }
-        },
-        "stout/claude-haiku-4-5": {
-          "name": "Claude Haiku 4.5",
-          "cost": {
-            "input": 0.001,
-            "output": 0.005
-          }
-        },
-        "stout/gemini-3.1-pro": {
-          "name": "Gemini 3.1 Pro",
-          "cost": {
-            "input": 0.00025,
-            "output": 0.0025
-          }
-        },
-        "stout/gemini-3-flash": {
-          "name": "Gemini 3 Flash",
-          "cost": {
-            "input": 5e-05,
-            "output": 5e-05
-          }
-        },
-        "stout/glm-5.1": {
-          "name": "GLM 5.1",
-          "cost": {
-            "input": 0.001,
-            "output": 0.001
-          }
-        },
-        "stout/kimi-k2.6": {
-          "name": "Kimi K2.6",
-          "cost": {
-            "input": 0.002,
-            "output": 0.006
-          }
-        },
-        "stout/deepseek-v4-pro": {
-          "name": "DeepSeek V4 Pro",
-          "cost": {
-            "input": 0.0014,
-            "output": 0.0028
-          }
-        },
-        "stout/qwen3.6-plus": {
-          "name": "Qwen 3.6 Plus",
-          "cost": {
-            "input": 0.002,
-            "output": 0.01
-          }
-        },
-        "stout/minimax-m2.7": {
-          "name": "MiniMax M2.7",
-          "cost": {
-            "input": 0.0001,
-            "output": 0.0012
-          }
-        },
-        "stout/claude-opus-4-5": {
-          "name": "Claude-Opus-4-5"
-        },
-        "stout/claude-opus-4-1": {
-          "name": "Claude-Opus-4-1"
-        },
-        "stout/claude-sonnet-4": {
-          "name": "Claude-Sonnet-4"
-        },
-        "stout/glm-5": {
-          "name": "Glm-5"
-        },
-        "stout/kimi-k2.5": {
-          "name": "Kimi-K2.5"
-        },
-        "stout/deepseek-v4-flash": {
-          "name": "Deepseek-V4-Flash"
-        },
-        "stout/mimo-v2.5": {
-          "name": "Mimo-V2.5"
-        },
-        "stout/mimo-v2.5-pro": {
-          "name": "Mimo-V2.5-Pro"
-        },
-        "stout/minimax-m2.5": {
-          "name": "Minimax-M2.5"
-        },
-        "stout/qwen3.5-plus": {
-          "name": "Qwen3.5-Plus"
-        },
-        "zen/gpt-5.5": {
-          "name": "Gpt 5.5"
-        },
-        "zen/gpt-5.5-pro": {
-          "name": "Gpt 5.5 Pro"
-        },
-        "zen/gpt-5.4": {
-          "name": "Gpt 5.4"
-        },
-        "zen/gpt-5.4-pro": {
-          "name": "Gpt 5.4 Pro"
-        },
-        "zen/gpt-5.4-mini": {
-          "name": "Gpt 5.4 Mini"
-        },
-        "zen/gpt-5.4-nano": {
-          "name": "Gpt 5.4 Nano"
-        },
-        "zen/gpt-5.3-codex": {
-          "name": "Gpt 5.3 Codex"
-        },
-        "zen/gpt-5.3-codex-spark": {
-          "name": "Gpt 5.3 Codex Spark"
-        },
-        "zen/gpt-5.2": {
-          "name": "Gpt 5.2"
-        },
-        "zen/gpt-5.2-codex": {
-          "name": "Gpt 5.2 Codex"
-        },
-        "zen/gpt-5.1": {
-          "name": "Gpt 5.1"
-        },
-        "zen/gpt-5.1-codex": {
-          "name": "Gpt 5.1 Codex"
-        },
-        "zen/gpt-5.1-codex-max": {
-          "name": "Gpt 5.1 Codex Max"
-        },
-        "zen/gpt-5.1-codex-mini": {
-          "name": "Gpt 5.1 Codex Mini"
-        },
-        "zen/gpt-5": {
-          "name": "Gpt 5"
-        },
-        "zen/gpt-5-codex": {
-          "name": "Gpt 5 Codex"
-        },
-        "zen/gpt-5-nano": {
-          "name": "Gpt 5 Nano"
-        },
-        "zen/claude-opus-4-7": {
-          "name": "Claude Opus 4 7"
-        },
-        "zen/claude-opus-4-6": {
-          "name": "Claude Opus 4 6"
-        },
-        "zen/claude-opus-4-5": {
-          "name": "Claude Opus 4 5"
-        },
-        "zen/claude-opus-4-1": {
-          "name": "Claude Opus 4 1"
-        },
-        "zen/claude-sonnet-4-6": {
-          "name": "Claude Sonnet 4 6"
-        },
-        "zen/claude-sonnet-4-5": {
-          "name": "Claude Sonnet 4 5"
-        },
-        "zen/claude-sonnet-4": {
-          "name": "Claude Sonnet 4"
-        },
-        "zen/claude-haiku-4-5": {
-          "name": "Claude Haiku 4 5"
-        },
-        "zen/claude-3-5-haiku": {
-          "name": "Claude 3 5 Haiku"
-        },
-        "zen/gemini-3.1-pro": {
-          "name": "Gemini 3.1 Pro"
-        },
-        "zen/gemini-3-flash": {
-          "name": "Gemini 3 Flash"
-        },
-        "zen/minimax-m2.5-free": {
-          "name": "Minimax M2.5 Free"
-        },
-        "zen/big-pickle": {
-          "name": "Big Pickle"
-        },
-        "zen/deepseek-v4-flash-free": {
-          "name": "Deepseek V4 Flash Free"
-        },
-        "zen/ring-2.6-1t-free": {
-          "name": "Ring 2.6 1T Free"
-        },
-        "zen/nemotron-3-super-free": {
-          "name": "Nemotron 3 Super Free"
-        },
-        "anthropic/claude-sonnet-4": {
-          "name": "Claude Sonnet 4"
-        },
-        "anthropic/claude-opus-4": {
-          "name": "Claude Opus 4"
-        },
-        "anthropic/claude-haiku-3-5": {
-          "name": "Claude Haiku 3 5"
-        },
-        "go/glm-5.1": {
-          "name": "Glm 5.1"
-        },
-        "go/glm-5": {
-          "name": "Glm 5"
-        },
-        "go/kimi-k2.5": {
-          "name": "Kimi K2.5"
-        },
-        "go/kimi-k2.6": {
-          "name": "Kimi K2.6"
-        },
-        "go/deepseek-v4-pro": {
-          "name": "Deepseek V4 Pro"
-        },
-        "go/deepseek-v4-flash": {
-          "name": "Deepseek V4 Flash"
-        },
-        "go/mimo-v2.5": {
-          "name": "Mimo V2.5"
-        },
-        "go/mimo-v2.5-pro": {
-          "name": "Mimo V2.5 Pro"
-        },
-        "go/qwen3.6-plus": {
-          "name": "Qwen3.6 Plus"
-        },
-        "go/qwen3.5-plus": {
-          "name": "Qwen3.5 Plus"
-        },
-        "go/minimax-m2.7": {
-          "name": "Minimax M2.7"
-        },
-        "go/minimax-m2.5": {
-          "name": "Minimax M2.5"
-        },
-        "jina/embeddings-v3": {
-          "name": "Embeddings V3"
-        }
+      }
+    },
+    "opencode-go": {
+      "npm": "@ai-sdk/openai-compatible",
+      "options": {
+        "baseURL": "https://ai.stout.zone/v1",
+        "apiKey": "{env:LITELLM_API_KEY}"
+      }
+    },
+    "opencode": {
+      "npm": "@ai-sdk/openai-compatible",
+      "options": {
+        "baseURL": "https://ai.stout.zone/v1",
+        "apiKey": "{env:LITELLM_API_KEY}"
       }
     }
   }

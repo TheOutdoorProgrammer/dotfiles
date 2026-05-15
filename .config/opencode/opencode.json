@@ -17,13 +17,11 @@
   },
   "agent": {
     "ollie": {
-      "model": "anthropic/claude-opus-4-6",
+      "model": "litellm/stout/claude-opus-4-7",
       "color": "#50FA7B",
       "tools": {
-        "github_*": false,
         "notion_*": false,
-        "google-calendar_*": false,
-        "granola_*": false
+        "google-calendar_*": false
       }
     },
     "build": {
@@ -47,7 +45,7 @@
       "description": "General-purpose subagent for parallel data gathering and multi-step subtasks",
       "mode": "subagent",
       "hidden": true,
-      "model": "anthropic/claude-sonnet-4-6"
+      "model": "litellm/stout/claude-sonnet-4-6"
     }
   },
   "permission": {
@@ -62,10 +60,13 @@
     "obsidian_obsidian_execute_command": false
   },
   "plugin": [
-    "@plannotator/opencode@latest",
-    "opencode-pty",
-    "opencode-antigravity-auth@1.6.0",
-    "opencode-openai-codex-auth"
+    [
+      "@plannotator/opencode@latest",
+      {
+        "workflow": "all-agents"
+      }
+    ],
+    "opencode-pty"
   ],
   "instructions": [
     "~/.config/opencode/plugin/shell-strategy/shell_strategy.md"
@@ -130,275 +131,318 @@
         "https://mcp.granola.ai/mcp"
       ],
       "enabled": true
+    },
+    "davinci-resolve": {
+      "type": "local",
+      "command": [
+        "/Users/joeystout/projects/src/github.com/samuelgursky/davinci-resolve-mcp/venv/bin/python",
+        "/Users/joeystout/projects/src/github.com/samuelgursky/davinci-resolve-mcp/src/server.py"
+      ],
+      "enabled": true
+    },
+    "home-assistant": {
+      "type": "local",
+      "command": [
+        "/Users/joeystout/.local/bin/uvx",
+        "--python",
+        "3.13",
+        "--refresh",
+        "ha-mcp@latest"
+      ],
+      "enabled": true,
+      "environment": {
+        "HOMEASSISTANT_URL": "https://home.stout.zone",
+        "HOMEASSISTANT_TOKEN": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIwOTBmYjRhNDgzNTM0MDI4YTE0ZDUzNDA0Njg3OWIxMSIsImlhdCI6MTc3NzU2NzY2NSwiZXhwIjoyMDkyOTI3NjY1fQ.ymD8R0tLlU1qY9SENUqVSQRnQnf87LG94dkSeLa3i3k"
+      }
     }
   },
   "provider": {
-    "google": {
-      "name": "Google",
-      "models": {
-        "antigravity-gemini-3-pro": {
-          "name": "Gemini 3 Pro (Antigravity)",
-          "limit": {
-            "context": 1048576,
-            "output": 65535
-          },
-          "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
-          },
-          "variants": {
-            "low": {
-              "thinkingLevel": "low"
-            },
-            "high": {
-              "thinkingLevel": "high"
-            }
-          }
-        },
-        "antigravity-gemini-3-flash": {
-          "name": "Gemini 3 Flash (Antigravity)",
-          "limit": {
-            "context": 1048576,
-            "output": 65536
-          },
-          "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
-          },
-          "variants": {
-            "minimal": {
-              "thinkingLevel": "minimal"
-            },
-            "low": {
-              "thinkingLevel": "low"
-            },
-            "medium": {
-              "thinkingLevel": "medium"
-            },
-            "high": {
-              "thinkingLevel": "high"
-            }
-          }
-        },
-        "antigravity-claude-sonnet-4-5": {
-          "name": "Claude Sonnet 4.5 (Antigravity)",
-          "limit": {
-            "context": 200000,
-            "output": 64000
-          },
-          "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
-          }
-        },
-        "antigravity-claude-sonnet-4-5-thinking": {
-          "name": "Claude Sonnet 4.5 Thinking (Antigravity)",
-          "limit": {
-            "context": 200000,
-            "output": 64000
-          },
-          "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
-          },
-          "variants": {
-            "low": {
-              "thinkingConfig": {
-                "thinkingBudget": 8192
-              }
-            },
-            "max": {
-              "thinkingConfig": {
-                "thinkingBudget": 32768
-              }
-            }
-          }
-        },
-        "antigravity-claude-opus-4-5-thinking": {
-          "name": "Claude Opus 4.5 Thinking (Antigravity)",
-          "limit": {
-            "context": 200000,
-            "output": 64000
-          },
-          "modalities": {
-            "input": [
-              "text",
-              "image",
-              "pdf"
-            ],
-            "output": [
-              "text"
-            ]
-          },
-          "variants": {
-            "low": {
-              "thinkingConfig": {
-                "thinkingBudget": 8192
-              }
-            },
-            "max": {
-              "thinkingConfig": {
-                "thinkingBudget": 32768
-              }
-            }
-          }
-        }
-      }
-    },
-    "openai": {
-      "name": "OpenAI",
+    "litellm": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "LiteLLM",
       "options": {
-        "reasoningEffort": "medium",
-        "reasoningSummary": "auto",
-        "textVerbosity": "medium",
-        "include": [
-          "reasoning.encrypted_content"
-        ],
-        "store": false
+        "baseURL": "https://ai.stout.zone/v1",
+        "apiKey": "{env:LITELLM_API_KEY}"
       },
       "models": {
-        "gpt-5.2": {
-          "name": "GPT 5.2 (OAuth)",
-          "limit": {
-            "context": 272000,
-            "output": 128000
-          },
-          "modalities": {
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
-          },
-          "variants": {
-            "none": {
-              "reasoningEffort": "none",
-              "reasoningSummary": "auto",
-              "textVerbosity": "medium"
-            },
-            "low": {
-              "reasoningEffort": "low",
-              "reasoningSummary": "auto",
-              "textVerbosity": "medium"
-            },
-            "medium": {
-              "reasoningEffort": "medium",
-              "reasoningSummary": "auto",
-              "textVerbosity": "medium"
-            },
-            "high": {
-              "reasoningEffort": "high",
-              "reasoningSummary": "detailed",
-              "textVerbosity": "medium"
-            },
-            "xhigh": {
-              "reasoningEffort": "xhigh",
-              "reasoningSummary": "detailed",
-              "textVerbosity": "medium"
+        "stout/claude-opus-4-7": {
+          "name": "Claude Opus 4.7",
+          "maxTokens": 128000,
+          "contextLength": 1000000,
+          "cost": {
+            "input": 5,
+            "output": 25,
+            "cache": {
+              "read": 0.5,
+              "write": 6.25
             }
           }
         },
-        "gpt-5.2-codex": {
-          "name": "GPT 5.2 Codex (OAuth)",
-          "limit": {
-            "context": 272000,
-            "output": 128000
-          },
-          "modalities": {
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
-          },
-          "variants": {
-            "low": {
-              "reasoningEffort": "low",
-              "reasoningSummary": "auto",
-              "textVerbosity": "medium"
-            },
-            "medium": {
-              "reasoningEffort": "medium",
-              "reasoningSummary": "auto",
-              "textVerbosity": "medium"
-            },
-            "high": {
-              "reasoningEffort": "high",
-              "reasoningSummary": "detailed",
-              "textVerbosity": "medium"
-            },
-            "xhigh": {
-              "reasoningEffort": "xhigh",
-              "reasoningSummary": "detailed",
-              "textVerbosity": "medium"
+        "stout/claude-opus-4-6": {
+          "name": "Claude Opus 4.6",
+          "cost": {
+            "input": 0.005,
+            "output": 0.025,
+            "cache": {
+              "read": 0.0005,
+              "write": 0.00625
             }
           }
         },
-        "gpt-5.1-codex-max": {
-          "name": "GPT 5.1 Codex Max (OAuth)",
-          "limit": {
-            "context": 272000,
-            "output": 128000
-          },
-          "modalities": {
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
-          },
-          "variants": {
-            "low": {
-              "reasoningEffort": "low",
-              "reasoningSummary": "detailed",
-              "textVerbosity": "medium"
-            },
-            "medium": {
-              "reasoningEffort": "medium",
-              "reasoningSummary": "detailed",
-              "textVerbosity": "medium"
-            },
-            "high": {
-              "reasoningEffort": "high",
-              "reasoningSummary": "detailed",
-              "textVerbosity": "medium"
-            },
-            "xhigh": {
-              "reasoningEffort": "xhigh",
-              "reasoningSummary": "detailed",
-              "textVerbosity": "medium"
+        "stout/claude-sonnet-4-6": {
+          "name": "Claude Sonnet 4.6",
+          "cost": {
+            "input": 0.003,
+            "output": 0.015,
+            "cache": {
+              "read": 0.0003,
+              "write": 0.00375
             }
           }
+        },
+        "stout/claude-sonnet-4-5": {
+          "name": "Claude Sonnet 4.5",
+          "cost": {
+            "input": 0.003,
+            "output": 0.015,
+            "cache": {
+              "read": 0.0003,
+              "write": 0.00375
+            }
+          }
+        },
+        "stout/claude-haiku-4-5": {
+          "name": "Claude Haiku 4.5",
+          "cost": {
+            "input": 0.001,
+            "output": 0.005
+          }
+        },
+        "stout/gemini-3.1-pro": {
+          "name": "Gemini 3.1 Pro",
+          "cost": {
+            "input": 0.00025,
+            "output": 0.0025
+          }
+        },
+        "stout/gemini-3-flash": {
+          "name": "Gemini 3 Flash",
+          "cost": {
+            "input": 5e-05,
+            "output": 5e-05
+          }
+        },
+        "stout/glm-5.1": {
+          "name": "GLM 5.1",
+          "cost": {
+            "input": 0.001,
+            "output": 0.001
+          }
+        },
+        "stout/kimi-k2.6": {
+          "name": "Kimi K2.6",
+          "cost": {
+            "input": 0.002,
+            "output": 0.006
+          }
+        },
+        "stout/deepseek-v4-pro": {
+          "name": "DeepSeek V4 Pro",
+          "cost": {
+            "input": 0.0014,
+            "output": 0.0028
+          }
+        },
+        "stout/qwen3.6-plus": {
+          "name": "Qwen 3.6 Plus",
+          "cost": {
+            "input": 0.002,
+            "output": 0.01
+          }
+        },
+        "stout/minimax-m2.7": {
+          "name": "MiniMax M2.7",
+          "cost": {
+            "input": 0.0001,
+            "output": 0.0012
+          }
+        },
+        "stout/claude-opus-4-5": {
+          "name": "Claude-Opus-4-5"
+        },
+        "stout/claude-opus-4-1": {
+          "name": "Claude-Opus-4-1"
+        },
+        "stout/claude-sonnet-4": {
+          "name": "Claude-Sonnet-4"
+        },
+        "stout/glm-5": {
+          "name": "Glm-5"
+        },
+        "stout/kimi-k2.5": {
+          "name": "Kimi-K2.5"
+        },
+        "stout/deepseek-v4-flash": {
+          "name": "Deepseek-V4-Flash"
+        },
+        "stout/mimo-v2.5": {
+          "name": "Mimo-V2.5"
+        },
+        "stout/mimo-v2.5-pro": {
+          "name": "Mimo-V2.5-Pro"
+        },
+        "stout/minimax-m2.5": {
+          "name": "Minimax-M2.5"
+        },
+        "stout/qwen3.5-plus": {
+          "name": "Qwen3.5-Plus"
+        },
+        "zen/gpt-5.5": {
+          "name": "Gpt 5.5"
+        },
+        "zen/gpt-5.5-pro": {
+          "name": "Gpt 5.5 Pro"
+        },
+        "zen/gpt-5.4": {
+          "name": "Gpt 5.4"
+        },
+        "zen/gpt-5.4-pro": {
+          "name": "Gpt 5.4 Pro"
+        },
+        "zen/gpt-5.4-mini": {
+          "name": "Gpt 5.4 Mini"
+        },
+        "zen/gpt-5.4-nano": {
+          "name": "Gpt 5.4 Nano"
+        },
+        "zen/gpt-5.3-codex": {
+          "name": "Gpt 5.3 Codex"
+        },
+        "zen/gpt-5.3-codex-spark": {
+          "name": "Gpt 5.3 Codex Spark"
+        },
+        "zen/gpt-5.2": {
+          "name": "Gpt 5.2"
+        },
+        "zen/gpt-5.2-codex": {
+          "name": "Gpt 5.2 Codex"
+        },
+        "zen/gpt-5.1": {
+          "name": "Gpt 5.1"
+        },
+        "zen/gpt-5.1-codex": {
+          "name": "Gpt 5.1 Codex"
+        },
+        "zen/gpt-5.1-codex-max": {
+          "name": "Gpt 5.1 Codex Max"
+        },
+        "zen/gpt-5.1-codex-mini": {
+          "name": "Gpt 5.1 Codex Mini"
+        },
+        "zen/gpt-5": {
+          "name": "Gpt 5"
+        },
+        "zen/gpt-5-codex": {
+          "name": "Gpt 5 Codex"
+        },
+        "zen/gpt-5-nano": {
+          "name": "Gpt 5 Nano"
+        },
+        "zen/claude-opus-4-7": {
+          "name": "Claude Opus 4 7"
+        },
+        "zen/claude-opus-4-6": {
+          "name": "Claude Opus 4 6"
+        },
+        "zen/claude-opus-4-5": {
+          "name": "Claude Opus 4 5"
+        },
+        "zen/claude-opus-4-1": {
+          "name": "Claude Opus 4 1"
+        },
+        "zen/claude-sonnet-4-6": {
+          "name": "Claude Sonnet 4 6"
+        },
+        "zen/claude-sonnet-4-5": {
+          "name": "Claude Sonnet 4 5"
+        },
+        "zen/claude-sonnet-4": {
+          "name": "Claude Sonnet 4"
+        },
+        "zen/claude-haiku-4-5": {
+          "name": "Claude Haiku 4 5"
+        },
+        "zen/claude-3-5-haiku": {
+          "name": "Claude 3 5 Haiku"
+        },
+        "zen/gemini-3.1-pro": {
+          "name": "Gemini 3.1 Pro"
+        },
+        "zen/gemini-3-flash": {
+          "name": "Gemini 3 Flash"
+        },
+        "zen/minimax-m2.5-free": {
+          "name": "Minimax M2.5 Free"
+        },
+        "zen/big-pickle": {
+          "name": "Big Pickle"
+        },
+        "zen/deepseek-v4-flash-free": {
+          "name": "Deepseek V4 Flash Free"
+        },
+        "zen/ring-2.6-1t-free": {
+          "name": "Ring 2.6 1T Free"
+        },
+        "zen/nemotron-3-super-free": {
+          "name": "Nemotron 3 Super Free"
+        },
+        "anthropic/claude-sonnet-4": {
+          "name": "Claude Sonnet 4"
+        },
+        "anthropic/claude-opus-4": {
+          "name": "Claude Opus 4"
+        },
+        "anthropic/claude-haiku-3-5": {
+          "name": "Claude Haiku 3 5"
+        },
+        "go/glm-5.1": {
+          "name": "Glm 5.1"
+        },
+        "go/glm-5": {
+          "name": "Glm 5"
+        },
+        "go/kimi-k2.5": {
+          "name": "Kimi K2.5"
+        },
+        "go/kimi-k2.6": {
+          "name": "Kimi K2.6"
+        },
+        "go/deepseek-v4-pro": {
+          "name": "Deepseek V4 Pro"
+        },
+        "go/deepseek-v4-flash": {
+          "name": "Deepseek V4 Flash"
+        },
+        "go/mimo-v2.5": {
+          "name": "Mimo V2.5"
+        },
+        "go/mimo-v2.5-pro": {
+          "name": "Mimo V2.5 Pro"
+        },
+        "go/qwen3.6-plus": {
+          "name": "Qwen3.6 Plus"
+        },
+        "go/qwen3.5-plus": {
+          "name": "Qwen3.5 Plus"
+        },
+        "go/minimax-m2.7": {
+          "name": "Minimax M2.7"
+        },
+        "go/minimax-m2.5": {
+          "name": "Minimax M2.5"
+        },
+        "jina/embeddings-v3": {
+          "name": "Embeddings V3"
         }
       }
     }

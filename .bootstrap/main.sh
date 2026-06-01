@@ -97,6 +97,27 @@ elif [ -f "$MCP_CONFIG" ]; then
   echo "SKIP: claude CLI not found — install Claude Code, then re-run bootstrap for MCP servers."
 fi
 
+# Wire agent skills into Claude Code (~/.claude/skills)
+# Source of truth: ~/.agents/skills (tracked in dotfiles) and the home repo (if cloned).
+# Idempotent — only creates links that are missing, never clobbers existing files.
+link_claude_skills() {
+  local src="$1"
+  [ -d "$src" ] || return 0
+  mkdir -p "$HOME/.claude/skills"
+  local dir name target
+  for dir in "$src"/*/; do
+    [ -d "$dir" ] || continue
+    name=$(basename "$dir")
+    target="$HOME/.claude/skills/$name"
+    if [ -e "$target" ] || [ -L "$target" ]; then
+      continue
+    fi
+    ln -s "${dir%/}" "$target" && echo "linked claude skill: $name"
+  done
+}
+link_claude_skills "$HOME/.agents/skills"
+link_claude_skills "$HOME/projects/src/github.com/TheOutdoorProgrammer/home/skills"
+
 # OnePassword Check
 if [ ! -f ~/OP.sh ]; then
   echo "export OP_SERVICE_ACCOUNT_TOKEN=\"\"" > ~/OP.sh

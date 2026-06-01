@@ -126,7 +126,7 @@ git(){
     ;;
 
     "pull-request -o"*)
-      code --agent ollie --prompt "Create a pull request for the current project using the git-pull-request skill." --model "anthropic/claude-opus-4-6"
+      claude --print "Create a pull request for the current project using the git-pull-request skill." --model "claude-opus-4-6"
     ;;
 
     "checkout")

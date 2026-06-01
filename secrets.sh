@@ -17,13 +17,13 @@ _fetch dockerhub     vault get "DockerHub"
 _fetch openai        vault get "OpenAPI Key"
 _fetch cloudflare    vault get "Cloudflare API Key"
 _fetch smithery      vault get "Smithery API Key"
-_fetch anthropic     vault get "anthropic_api_key"
 _fetch perplexity    vault get "perplexity_api_key"
 _fetch obsidian      vault get "Obsidian API Key"
 _fetch slack         vault get "SLACK_WORKSPACE_URL"
 _fetch gemini        vault get "GEMINI_API_KEY"
 _fetch airtrail      vault get "AirTrail API Key"
 _fetch litellm       vault get "LiteLLM API Key"
+_fetch litellm_work  vault get "LiteLLM Work API Key"
 _fetch spacelift     spacectl profile export-token
 
 # Watchdog: kill any stragglers after 60s
@@ -50,7 +50,6 @@ export DOCKERHUB_PASSWORD=$(<"$_secrets_tmp/dockerhub")
 export OPENAI_API_KEY=$(<"$_secrets_tmp/openai")
 export CLOUDFLARE_API_TOKEN=$(<"$_secrets_tmp/cloudflare")
 export SMITHERY_API_KEY=$(<"$_secrets_tmp/smithery")
-export ANTHROPIC_API_KEY=$(<"$_secrets_tmp/anthropic")
 export PERPLEXITY_API_KEY=$(<"$_secrets_tmp/perplexity")
 export OBSIDIAN_API_KEY=$(<"$_secrets_tmp/obsidian")
 export SPACELIFT_API_TOKEN=$(<"$_secrets_tmp/spacelift")
@@ -58,6 +57,10 @@ export SLACK_WORKSPACE_URL=$(<"$_secrets_tmp/slack")
 export GEMINI_API_KEY=$(<"$_secrets_tmp/gemini")
 export AIRTRAIL_API_KEY=$(<"$_secrets_tmp/airtrail")
 export LITELLM_API_KEY=$(<"$_secrets_tmp/litellm")
+export LITELLM_WORK_API_KEY=$(<"$_secrets_tmp/litellm_work")
+
+export ANTHROPIC_BASE_URL=https://ai.stout.zone
+export ANTHROPIC_CUSTOM_HEADERS="x-litellm-api-key: Bearer $LITELLM_WORK_API_KEY"
 
 rm -rf "$_secrets_tmp"
 unset _secrets_tmp

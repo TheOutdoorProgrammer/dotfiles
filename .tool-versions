@@ -1,6 +1,6 @@
 nodejs lts
 awscli 2.32.31
-golang 1.17.6
+golang 1.24.4
 kubectl 1.35.0
 terraform 1.14.3
 yarn 1.22.17

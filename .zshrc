@@ -64,7 +64,7 @@ alias kunhealthy="kubectl get -o wide pods -A | grep -v \"Completed|1/1|2/2|3/3|
 alias sublime="subl"
 alias k="kubectl"
 alias vim="nvim"
-alias code="opencode"
+alias code="claude"
 
 # Personal Stuff
 source ~/functions.sh
@@ -90,8 +90,6 @@ source <(kubectl completion zsh)
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
-# opencode
-export PATH=/Users/joeystout/.opencode/bin:$PATH
 
 # Android SDK
 export ANDROID_HOME=$HOME/Library/Android/sdk
@@ -103,9 +101,3 @@ export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin
 export PATH="/Users/joeystout/.rd/bin:$PATH"
 ### MANAGED BY RANCHER DESKTOP END (DO NOT EDIT)
 export PATH="$HOME/.local/bin:$PATH"
-export OPENCODE_EXPERIMENTAL_OUTPUT_TOKEN_MAX=16384
-
-# OpenCode token aliases
-alias oc='opencode'                                           # Default (16k)
-alias oc-quick='OPENCODE_EXPERIMENTAL_OUTPUT_TOKEN_MAX=4096 opencode'   # Quick responses (4k)
-alias oc-long='OPENCODE_EXPERIMENTAL_OUTPUT_TOKEN_MAX=32000 opencode'   # Long outputs (32k)

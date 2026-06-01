@@ -6,5 +6,17 @@
 **/.terraform/*
 **/__pycache__/*
 **/.tool-versions
-**/.claude/**
 **/.sisyphus/**
+
+# Claude Code — ignore ephemeral/sensitive, track config
+.claude/**
+!.claude/settings.json
+!.claude/statusline.sh
+!.claude/track-mcp-usage.sh
+!.claude/RTK.md
+!.claude/CLAUDE.md
+!.claude/mcp-servers.json
+!.claude/commands/
+!.claude/commands/**
+!.claude/skills/
+!.claude/skills/**

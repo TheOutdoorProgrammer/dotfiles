@@ -1,0 +1,1 @@
+/Users/joeystout/projects/src/github.com/TheOutdoorProgrammer/home/skills/airtrail-flights/SKILL.md

@@ -1,0 +1,54 @@
+{
+  "context7": {
+    "type": "http",
+    "url": "https://mcp.context7.com/mcp"
+  },
+  "github": {
+    "type": "http",
+    "url": "https://api.githubcopilot.com/mcp/",
+    "headers": {
+      "Authorization": "Bearer ${GITHUB_TOKEN}"
+    }
+  },
+  "grep": {
+    "type": "http",
+    "url": "https://mcp.grep.app"
+  },
+  "websearch": {
+    "type": "http",
+    "url": "https://mcp.exa.ai/mcp"
+  },
+  "obsidian": {
+    "type": "stdio",
+    "command": "bun",
+    "args": [
+      "/Users/joeystout/projects/src/github.com/fazer-ai/mcp-obsidian/dist/index.js"
+    ]
+  },
+  "google-calendar": {
+    "type": "stdio",
+    "command": "npx",
+    "args": [
+      "@cocal/google-calendar-mcp"
+    ],
+    "env": {
+      "GOOGLE_OAUTH_CREDENTIALS": "/Users/joeystout/Documents/google-mcp-creds.json"
+    }
+  },
+  "granola": {
+    "type": "stdio",
+    "command": "npx",
+    "args": [
+      "mcp-remote",
+      "https://mcp.granola.ai/mcp"
+    ]
+  },
+  "notion": {
+    "type": "stdio",
+    "command": "npx",
+    "args": [
+      "mcp-remote",
+      "https://mcp.notion.com/mcp"
+    ]
+  }
+}

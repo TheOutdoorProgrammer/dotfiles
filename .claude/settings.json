@@ -1,0 +1,57 @@
+{
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
+  "editorMode": "normal",
+  "enabledPlugins": {
+    "plannotator@plannotator": true
+  },
+  "extraKnownMarketplaces": {
+    "plannotator": {
+      "source": {
+        "repo": "backnotprop/plannotator",
+        "source": "github"
+      }
+    }
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "rtk hook claude",
+            "type": "command"
+          }
+        ],
+        "matcher": "Bash"
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "~/.claude/track-mcp-usage.sh",
+            "timeout": 5,
+            "type": "command"
+          }
+        ],
+        "matcher": "^mcp__"
+      }
+    ]
+  },
+  "model": "claude-opus-4-6[1m]",
+  "permissions": {
+    "allow": [
+      "Bash"
+    ],
+    "defaultMode": "default"
+  },
+  "skipAutoPermissionPrompt": true,
+  "statusLine": {
+    "command": "~/.claude/statusline.sh",
+    "refreshInterval": 10,
+    "type": "command"
+  },
+  "theme": "dark"
+}

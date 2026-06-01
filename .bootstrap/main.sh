@@ -84,6 +84,19 @@ gh extension install github/gh-copilot
 # Install Slack CLI
 curl -fsSL https://raw.githubusercontent.com/stablyai/agent-slack/main/install.sh | sh
 
+# Claude Code MCP servers
+MCP_CONFIG="$HOME/.claude/mcp-servers.json"
+if [ -f "$MCP_CONFIG" ] && command -v claude &>/dev/null; then
+  echo "Installing Claude Code MCP servers..."
+  for server in $(jq -r 'keys[]' "$MCP_CONFIG"); do
+    config=$(jq -c ".\"$server\"" "$MCP_CONFIG")
+    claude mcp add-json "$server" "$config" -s user
+  done
+  echo "Claude Code MCP servers installed."
+elif [ -f "$MCP_CONFIG" ]; then
+  echo "SKIP: claude CLI not found — install Claude Code, then re-run bootstrap for MCP servers."
+fi
+
 # OnePassword Check
 if [ ! -f ~/OP.sh ]; then
   echo "export OP_SERVICE_ACCOUNT_TOKEN=\"\"" > ~/OP.sh

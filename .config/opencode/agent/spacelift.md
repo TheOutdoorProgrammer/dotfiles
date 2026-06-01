@@ -1,1 +1,0 @@
-/Users/joeystout/projects/src/github.com/TheOutdoorProgrammer/home/agents/spacelift.md

@@ -112,9 +112,10 @@ fi
 if command -v go &>/dev/null; then
   make -C "$HOME_REPO/hooks" install
   make -C "$HOME_REPO/hoot" install
+  make -C "$HOME_REPO/boards" install
   echo "NOTE: ollie-hooks also needs its PreToolUse/PostToolUse entries in ~/.claude/settings.json — see $HOME_REPO/hooks/README.md"
 else
-  echo "SKIP: go not found — install Go, then: make -C $HOME_REPO/hooks install && make -C $HOME_REPO/hoot install"
+  echo "SKIP: go not found — install Go, then: make -C $HOME_REPO/hooks install && make -C $HOME_REPO/hoot install && make -C $HOME_REPO/boards install"
 fi
 
 # Wire agent skills into Claude Code (~/.claude/skills)

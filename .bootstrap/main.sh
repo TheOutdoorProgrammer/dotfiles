@@ -97,6 +97,26 @@ elif [ -f "$MCP_CONFIG" ]; then
   echo "SKIP: claude CLI not found — install Claude Code, then re-run bootstrap for MCP servers."
 fi
 
+# Home repo (infra docs, skills, commands, ollie-hooks) — the skills wiring
+# below links out of it, and the Claude Code hook gate builds from it.
+HOME_REPO="$HOME/projects/src/github.com/TheOutdoorProgrammer/home"
+if [ ! -d "$HOME_REPO" ]; then
+  mkdir -p "$(dirname "$HOME_REPO")"
+  git clone https://github.com/TheOutdoorProgrammer/home.git "$HOME_REPO"
+else
+  git -C "$HOME_REPO" pull --ff-only
+fi
+
+# Build + install ollie-hooks (Claude Code hook gate) and hoot (browser
+# question CLI) — home repo hooks/README.md + hoot/README.md.
+if command -v go &>/dev/null; then
+  make -C "$HOME_REPO/hooks" install
+  make -C "$HOME_REPO/hoot" install
+  echo "NOTE: ollie-hooks also needs its PreToolUse/PostToolUse entries in ~/.claude/settings.json — see $HOME_REPO/hooks/README.md"
+else
+  echo "SKIP: go not found — install Go, then: make -C $HOME_REPO/hooks install && make -C $HOME_REPO/hoot install"
+fi
+
 # Wire agent skills into Claude Code (~/.claude/skills)
 # Source of truth: ~/.agents/skills (tracked in dotfiles) and the home repo (if cloned).
 # Idempotent — only creates links that are missing, never clobbers existing files.

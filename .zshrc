@@ -73,6 +73,7 @@ export AWS_PAGER=""
 export GOPATH=~/projects
 export CDPATH=".:$HOME/projects"
 export BUILDKIT_PROGRESS=plain
+export AGENT_SLACK_SAFE_MODE=1  # agent-slack: send→draft redirect, edit/delete blocked (human in the loop, enforced)
 export PATH="/Applications/Sublime Text.app/Contents/SharedSupport/bin:$PATH"
 export POETRY_VIRTUALENVS_PREFER_ACTIVE_PYTHON=true
 

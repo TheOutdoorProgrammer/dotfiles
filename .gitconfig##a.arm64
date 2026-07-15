@@ -60,3 +60,9 @@
 [credential "https://git-codecommit.us-east-2.amazonaws.com"]
 	helper = !aws codecommit credential-helper $@
 	UseHttpPath = true
+[credential "https://github.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential

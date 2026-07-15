@@ -1,6 +1,4 @@
-# Zsh function to list all images and tags in a Docker registry
-# Add this to your ~/.zshrc file
-
+# List all images and tags in the internal Docker registry (master-1.stout.zone)
 registry-list() {
     local registry_url="http://master-1.stout.zone:31934"
     local username=""

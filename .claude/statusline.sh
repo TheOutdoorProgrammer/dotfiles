@@ -47,7 +47,14 @@ if [ -n "$WT_NAME" ]; then
   WT_INFO="\033[35m${WT_NAME}${RST}${DIM}(${WT_BRANCH})${RST}"
 fi
 
-# Rate limits
+# Rate limits — also snapshot them for `joey usage claude` (Claude Code only
+# exposes rate_limits via this stdin payload, so the statusline is the tap).
+# Atomic mv so a concurrent reader never sees a partial file.
+if echo "$input" | jq -e '.rate_limits.five_hour' >/dev/null 2>&1; then
+  SNAP="$HOME/.claude/usage-snapshot.json"
+  echo "$input" | jq -c '{rate_limits, model: .model.display_name, captured_at: now}' > "${SNAP}.tmp.$$" 2>/dev/null \
+    && mv "${SNAP}.tmp.$$" "$SNAP"
+fi
 RL_5H=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty')
 RL_7D=$(echo "$input" | jq -r '.rate_limits.seven_day.used_percentage // empty')
 RL_5H_RESET=$(echo "$input" | jq -r '.rate_limits.five_hour.resets_at // empty')

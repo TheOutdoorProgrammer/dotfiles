@@ -1,17 +1,21 @@
+# Switch AWS_PROFILE and verify with an STS caller-identity check
 changeProfile(){
     export AWS_PROFILE=$1
     aws sts get-caller-identity
 }
 
+# Set AWS_DEFAULT_REGION
 changeRegion(){
     export AWS_DEFAULT_REGION=$1
     echo "Changed region to $1"
 }
 
+# Reload ~/.zshrc into the current shell
 sourceHome(){
     source ~/.zshrc
 }
 
+# Attach to a tmux session by name, or list sessions and pick/create one interactively
 newTmux(){
     if [[ "$1" != "" ]]; then
         tmux attach -t $1 || tmux new -s $1
@@ -30,6 +34,7 @@ newTmux(){
     tmux attach -t $answer || tmux new -s $answer
 }
 
+# Launch a throwaway doks-debug pod for cluster debugging, optionally under a service account
 kdebug(){
     name=$(openssl rand -base64 12 | tr -d "=+/" | cut -c1-25 | awk '{print tolower($0)}')
     name="joeystout-$name"
@@ -46,6 +51,7 @@ kdebug(){
     fi
 }
 
+# Kill a tmux session by name, or the current one
 killTmux(){
   # check if session is passed in as a variable
   if [[ "$1" != "" ]]; then
@@ -55,6 +61,7 @@ killTmux(){
   fi
 }
 
+# Toggle terminal line wrapping on/off
 wrap(){
   FILE=~/.wrapped
   if test -f "$FILE"; then
@@ -68,6 +75,7 @@ wrap(){
   fi
 }
 
+# Restart gpg-agent and re-detect the YubiKey (fixes stuck GPG/SSH auth)
 gpgfix(){
   gpgconf --kill gpg-agent
   gpgconf --launch gpg-agent
@@ -75,10 +83,12 @@ gpgfix(){
   gpg --card-status
 }
 
+# Count lines from stdin (wc -l, whitespace-trimmed)
 count(){
   wc -l | xargs
 }
 
+# Commit all dotfile changes with a message and push to the yadm remote
 yadmUpdateRemote(){
   cd ~
   yadm commit -a -m "$1"
@@ -86,6 +96,7 @@ yadmUpdateRemote(){
   cd -
 }
 
+# Fetch + pull the latest dotfiles from the yadm remote
 yadmFetchRemote(){
   cd ~
   yadm fetch
@@ -93,6 +104,7 @@ yadmFetchRemote(){
   cd -
 }
 
+# git wrapper adding custom subcommands (commit -c, clean, checkout via fzf, pull-request, delete --olderthan); everything else falls through to hub
 git(){
   case "$@" in
 
@@ -120,7 +132,7 @@ git(){
           fi
         done
     ;;
-    
+
     "pull-request -v")
       gh pr view --web
     ;;
@@ -140,14 +152,17 @@ git(){
   esac
 }
 
+# Print a k8s secret's data with values base64-decoded
 ksecret(){
   kubectl get secret $1 -o json | jq '.data | map_values(@base64d)'
 }
 
+# Flush the macOS DNS cache
 killDNS(){
   sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder
 }
 
+# Get/set key-value secrets in the 1Password "CLI" vault (wraps op)
 vault(){
   query="$1"
   title="$2"
@@ -167,6 +182,7 @@ vault(){
   fi
 }
 
+# Exit the shell if it's a kubie/kubecm context shell
 exitKubie(){
   if [[ ! -z "${KUBECONFIG}" ]]; then
     echo "Exiting Kubie Shell"
@@ -174,27 +190,33 @@ exitKubie(){
   fi
 }
 
+# Ask Claude a one-off question from the terminal (claude -p)
 help(){
   claude -p "$1"
 }
 
+# Run golangci-lint with auto-fix
 fixGo(){
   golangci-lint run --fix
 }
 
+# Cycle the digital window to the next video
 changeVideo(){
   curl http://digitalwindow.stout.zone:3000/change
 }
 
+# Set the digital window to a specific YouTube URL
 setVideo(){
   curl -H "youtube-url:$1" http://digitalwindow.stout.zone:3000/set_video_id
 }
 
+# Open IntelliJ IDEA with the given path (idea .)
 idea(){
   open -na "IntelliJ IDEA.app" --args "$@"
 }
 
 
+# Run specific Go tests by name: goTestFunc [-p package] <test1> [test2] ...
 goTestFunc() {
     # Check if at least 1 argument is provided
     if [ $# -lt 1 ]; then
@@ -203,10 +225,10 @@ goTestFunc() {
         echo "Example: goTestFunc -p spacelift test1 test2              # uses ./spacelift"
         return 1
     fi
-    
+
     local package="./..."
     local tests=()
-    
+
     # Check if first argument is -p
     if [[ $1 == "-p" ]]; then
         # -p flag present, second argument is package, rest are tests
@@ -221,7 +243,7 @@ goTestFunc() {
         # No -p flag, all arguments are test names
         tests=("$@")
     fi
-    
+
     # Build the -run parameter by joining test names with |
     local run_pattern=""
     if [ ${#tests[@]} -eq 1 ]; then
@@ -231,18 +253,20 @@ goTestFunc() {
         run_pattern=$(printf "%s|" "${tests[@]}")
         run_pattern="${run_pattern%|}"  # Remove trailing |
     fi
-    
+
     # Construct and execute the command
     local cmd="go test -v $package -run \"$run_pattern\""
-    
+
     echo "Running: $cmd"
     eval "$cmd"
 }
 
+# kubecm wrapper: `kubie ctx` maps to kubecm switch, everything else passes through
 kubie() {
     [[ "$1" == "ctx" ]] && kubecm switch "${@:2}" || kubecm "$@"
 }
 
+# Strip finalizers from a stuck k8s resource so it can delete
 removeFinalizers() {
     if [[ $# -ne 2 ]]; then
         echo "Usage: removeFinalizers <resource-type> <resource-name>"
@@ -260,15 +284,16 @@ removeFinalizers() {
     kubectl patch "$resource_type" "$resource_name" -p '{"metadata":{"finalizers":null}}' --type=merge
 }
 
+# Wait for a pod to become ready, then tail its logs
 waitAndTail() {
     local pod_name=$1
     local container=${2:-""}
     local container_flag=""
-    
+
     if [ -n "$container" ]; then
         container_flag="-c $container"
     fi
-    
+
     echo "Waiting for pod $pod_name to be ready..."
     if kubectl wait --for=condition=ready pod/$pod_name --timeout=300s; then
         echo "Pod ready! Tailing logs..."
@@ -279,6 +304,7 @@ waitAndTail() {
     fi
 }
 
+# Export the AFT account's AWS creds from the vault and verify with STS
 useAFTAccount(){
   export AWS_ACCESS_KEY_ID=$(vault get aft-account-access-key-id)
   export AWS_SECRET_ACCESS_KEY=$(vault get aft-account-access-key-secret)
@@ -287,6 +313,7 @@ useAFTAccount(){
   aws sts get-caller-identity
 }
 
+# Export the Control Tower account's AWS creds from the vault and verify with STS
 useCTAccount(){
   export AWS_ACCESS_KEY_ID=$(vault get ct-account-access-key-id)
   export AWS_SECRET_ACCESS_KEY=$(vault get ct-account-access-key-secret)
@@ -295,6 +322,7 @@ useCTAccount(){
   aws sts get-caller-identity
 }
 
+# Export Cloudflare R2 (S3-compatible) creds + endpoint from the vault
 useCloudflareAccount(){
   export AWS_ACCESS_KEY_ID=$(vault get cloudflare-account-access-key-id)
   export AWS_SECRET_ACCESS_KEY=$(vault get cloudflare-account-access-key-secret)
@@ -303,13 +331,15 @@ useCloudflareAccount(){
   unset AWS_PROFILE
 }
 
+# Unset AWS_ENDPOINT_URL (undo useCloudflareAccount)
 unsetEndpoint(){
   unset AWS_ENDPOINT_URL
 }
 
+# Report whether each deployment's pods are spread across nodes (true = properly distributed)
 deploymentCheck(){
   kubectl get pods -A -o json | jq -r '
-  .items 
+  .items
   | group_by(.metadata.namespace + "/" + ((.metadata.ownerReferences[]? | select(.kind == "ReplicaSet") | .name | split("-")[:-1] | join("-")) // "no-deployment"))
   | map({
       deployment: (.[0].metadata.ownerReferences[]? | select(.kind == "ReplicaSet") | .name | split("-")[:-1] | join("-")),
@@ -322,6 +352,7 @@ deploymentCheck(){
 '
 }
 
+# Switch ANTHROPIC_API_KEY between personal and work accounts (from the vault)
 switchAnthropicAccount() {
   if [[ "$1" == "personal" ]]; then
     export ANTHROPIC_API_KEY=$(vault get "personal_anthropic_api_key")
@@ -336,6 +367,7 @@ switchAnthropicAccount() {
   fi
 }
 
+# Rebase the current branch onto the fork's upstream default branch (adds the upstream remote if missing)
 syncFork(){
   if ! git rev-parse --is-inside-work-tree &>/dev/null; then
     echo "Not a git repository"

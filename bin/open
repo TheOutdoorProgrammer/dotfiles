@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# PATH shim for `open`. Inside cmux, open a lone http(s):// URL as a browser TAB
+# and RIP you straight to it — switch to its workspace AND select the exact tab.
+#
+# Why two steps: `new-surface --focus true` switches the workspace but reverts to
+# the workspace's last-selected surface (your terminal), so the new tab isn't
+# focused across a workspace switch. The cmux:// navigation deep-link runs cmux's
+# `focusTab` (select workspace + select surface), which reliably lands you on the
+# exact tab. We create the tab (unfocused), then deep-link to it.
+#
+# Everything else — files, apps, flags, multiple args, or outside cmux — falls
+# through to the real /usr/bin/open unchanged.
+if [ -n "$CMUX_SURFACE_ID" ] && [ "$#" -eq 1 ]; then
+  case "$1" in
+    http://* | https://*)
+      # --id-format uuids prints: OK <surfaceUUID> <paneUUID> <workspaceUUID>
+      out=$(cmux new-surface --type browser --url "$1" --focus false --id-format uuids 2>/dev/null)
+      surf=$(printf '%s' "$out" | awk '/^OK/{print $2}')
+      ws=$(printf '%s' "$out" | awk '/^OK/{print $4}')
+      if [ -n "$ws" ] && [ -n "$surf" ]; then
+        exec /usr/bin/open "cmux://workspace/$ws/surface/$surf"
+      fi
+      exit 0
+      ;;
+  esac
+fi
+exec /usr/bin/open "$@"

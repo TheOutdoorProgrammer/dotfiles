@@ -1,0 +1,3 @@
+# Shared by Ghostty and cmux (cmux reads this same file).
+theme = Dracula
+font-family = FiraMono Nerd Font Mono

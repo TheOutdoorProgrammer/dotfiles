@@ -64,11 +64,12 @@ alias kunhealthy="kubectl get -o wide pods -A | grep -v \"Completed|1/1|2/2|3/3|
 alias sublime="subl"
 alias k="kubectl"
 alias vim="nvim"
-alias code="claude"
+alias code="cmux claude-teams"
 
 # Personal Stuff
 source ~/functions.sh
 source ~/secrets.sh
+source ~/.config/zsh/cmux-goto.zsh
 export AWS_PAGER=""
 export GOPATH=~/projects
 export CDPATH=".:$HOME/projects"

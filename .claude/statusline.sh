@@ -37,7 +37,7 @@ THINKING=$(echo "$input" | jq -r '.thinking.enabled // false')
 if [ "$THINKING" = "true" ]; then
   THINK_ICON="\033[36mon${RST}"
 else
-  THINK_ICON="\033[90moff${RST}"
+  THINK_ICON="\033[33moff${RST}"
 fi
 
 # Worktree
@@ -53,9 +53,17 @@ RL_7D=$(echo "$input" | jq -r '.rate_limits.seven_day.used_percentage // empty')
 RL_5H_RESET=$(echo "$input" | jq -r '.rate_limits.five_hour.resets_at // empty')
 RL_7D_RESET=$(echo "$input" | jq -r '.rate_limits.seven_day.resets_at // empty')
 
+SESSION_ID=$(echo "$input" | jq -r '.session_id // empty')
+
+# Plannotator review gate — flag file per session means the gate is on
+if [ -n "$SESSION_ID" ] && [ -f "$HOME/.claude/plannotator-review-gate.sessions/$SESSION_ID" ]; then
+  GATE_ICON="\033[36mon${RST}"
+else
+  GATE_ICON="\033[33moff${RST}"
+fi
+
 # MCP servers (configured) — bold if used this session
 SETTINGS="$HOME/.claude.json"
-SESSION_ID=$(echo "$input" | jq -r '.session_id // empty')
 MCP_LOGFILE="/tmp/claude-mcp-${SESSION_ID}.log"
 
 # Build list of used server names (just the server part from "server:tool")
@@ -84,10 +92,12 @@ printf "%s  %b %s%%  %s  \033[32m+%s${RST} \033[31m-%s${RST}\n" \
   "$MODEL" "$BAR" "$PCT" "$COST_FMT" "$ADDED" "$REMOVED"
 
 # --- Line 2: directory, effort, thinking, worktree ---
-L2="${DIM}${CWD_SHORT}${RST}  effort:${EFFORT}  thinking:${THINK_ICON}"
+# Dim keys, colored values, reset after every value so nothing bleeds
+L2="${DIM}${CWD_SHORT}${RST}  ${DIM}effort:${RST}\033[35m${EFFORT}${RST}  ${DIM}thinking:${RST}${THINK_ICON}  ${DIM}gate:${RST}${GATE_ICON}"
 if [ -n "$WT_NAME" ]; then
-  L2="${L2}  wt:${WT_INFO}"
+  L2="${L2}  ${DIM}wt:${RST}${WT_INFO}"
 fi
+L2="${L2}  ${DIM}sid:${RST}${SESSION_ID:-—}"
 printf "%b\n" "$L2"
 
 # --- Line 3: rate limits (if available) + MCP ---
@@ -97,14 +107,14 @@ if [ -n "$RL_5H" ]; then
   if [ "$RL_5H_INT" -lt 50 ]; then RL_5H_CLR="\033[32m"
   elif [ "$RL_5H_INT" -lt 80 ]; then RL_5H_CLR="\033[33m"
   else RL_5H_CLR="\033[31m"; fi
-  L3="5h:${RL_5H_CLR}${RL_5H_INT}%%${RST}"
+  L3="5h:${RL_5H_CLR}${RL_5H_INT}%${RST}"
 fi
 if [ -n "$RL_7D" ]; then
   RL_7D_INT=$(printf '%.0f' "$RL_7D")
   if [ "$RL_7D_INT" -lt 50 ]; then RL_7D_CLR="\033[32m"
   elif [ "$RL_7D_INT" -lt 80 ]; then RL_7D_CLR="\033[33m"
   else RL_7D_CLR="\033[31m"; fi
-  L3="${L3}  7d:${RL_7D_CLR}${RL_7D_INT}%%${RST}"
+  L3="${L3}  7d:${RL_7D_CLR}${RL_7D_INT}%${RST}"
 fi
 if [ -n "$L3" ]; then
   printf "%b  ${DIM}MCP: %b${RST}\n" "$L3" "$MCP_LINE"

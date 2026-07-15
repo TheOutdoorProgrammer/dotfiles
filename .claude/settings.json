@@ -3,55 +3,89 @@
     "commit": "",
     "pr": ""
   },
-  "editorMode": "normal",
+  "permissions": {
+    "allow": [
+      "Bash",
+      "Read"
+    ],
+    "defaultMode": "default"
+  },
+  "model": "claude-fable-5[1m]",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "rtk hook claude"
+          }
+        ]
+      },
+      {
+        "matcher": "^(Edit|Write|MultiEdit|NotebookEdit)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/joeystout/projects/src/github.com/TheOutdoorProgrammer/home/scripts/plannotator-review-gate.py",
+            "timeout": 345600
+          }
+        ]
+      },
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/joeystout/bin/ollie-hooks",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "^mcp__",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/track-mcp-usage.sh",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/joeystout/bin/ollie-hooks",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh",
+    "refreshInterval": 10
+  },
   "enabledPlugins": {
     "plannotator@plannotator": true
   },
   "extraKnownMarketplaces": {
     "plannotator": {
       "source": {
-        "repo": "backnotprop/plannotator",
-        "source": "github"
-      }
+        "source": "github",
+        "repo": "backnotprop/plannotator"
+      },
+      "autoUpdate": true
     }
   },
-  "hooks": {
-    "PreToolUse": [
-      {
-        "hooks": [
-          {
-            "command": "rtk hook claude",
-            "type": "command"
-          }
-        ],
-        "matcher": "Bash"
-      }
-    ],
-    "PostToolUse": [
-      {
-        "hooks": [
-          {
-            "command": "~/.claude/track-mcp-usage.sh",
-            "timeout": 5,
-            "type": "command"
-          }
-        ],
-        "matcher": "^mcp__"
-      }
-    ]
-  },
-  "model": "claude-opus-4-8[1m]",
-  "permissions": {
-    "allow": [
-      "Bash"
-    ],
-    "defaultMode": "default"
-  },
+  "skipWorkflowUsageWarning": true,
+  "theme": "dark",
+  "editorMode": "normal",
   "skipAutoPermissionPrompt": true,
-  "statusLine": {
-    "command": "~/.claude/statusline.sh",
-    "refreshInterval": 10,
-    "type": "command"
-  },
-  "theme": "dark"
+  "agentPushNotifEnabled": true
 }

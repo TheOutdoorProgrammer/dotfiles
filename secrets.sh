@@ -22,8 +22,8 @@ _fetch obsidian      vault get "Obsidian API Key"
 _fetch slack         vault get "SLACK_WORKSPACE_URL"
 _fetch gemini        vault get "GEMINI_API_KEY"
 _fetch airtrail      vault get "AirTrail API Key"
-_fetch litellm       vault get "LiteLLM API Key"
-_fetch litellm_work  vault get "LiteLLM Work API Key"
+#_fetch litellm       vault get "LiteLLM API Key"
+#_fetch litellm_work  vault get "LiteLLM Work API Key"
 _fetch spacelift     spacectl profile export-token
 
 # Watchdog: kill any stragglers after 60s
@@ -56,11 +56,11 @@ export SPACELIFT_API_TOKEN=$(<"$_secrets_tmp/spacelift")
 export SLACK_WORKSPACE_URL=$(<"$_secrets_tmp/slack")
 export GEMINI_API_KEY=$(<"$_secrets_tmp/gemini")
 export AIRTRAIL_API_KEY=$(<"$_secrets_tmp/airtrail")
-export LITELLM_API_KEY=$(<"$_secrets_tmp/litellm")
-export LITELLM_WORK_API_KEY=$(<"$_secrets_tmp/litellm_work")
+#export LITELLM_API_KEY=$(<"$_secrets_tmp/litellm")
+#export LITELLM_WORK_API_KEY=$(<"$_secrets_tmp/litellm_work")
 
-export ANTHROPIC_BASE_URL=https://ai.stout.zone
-export ANTHROPIC_CUSTOM_HEADERS="x-litellm-api-key: Bearer $LITELLM_WORK_API_KEY"
+#export ANTHROPIC_BASE_URL=https://ai.stout.zone
+#export ANTHROPIC_CUSTOM_HEADERS="x-litellm-api-key: Bearer $LITELLM_WORK_API_KEY"
 
 rm -rf "$_secrets_tmp"
 unset _secrets_tmp

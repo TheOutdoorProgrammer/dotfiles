@@ -1,0 +1,15 @@
+#!/bin/bash
+# Run by LaunchAgent zone.stout.brew-boot-update once per boot/login.
+# Phases run unconditionally in sequence — a failure in one never blocks
+# the next. Casks that need sudo fail fast (launchd has no TTY, so sudo
+# errors instead of prompting) and simply stay outdated until upgraded
+# by hand.
+export PATH="/opt/homebrew/bin:/usr/bin:/bin"
+export HOMEBREW_NO_ENV_HINTS=1
+
+echo "=== brew boot update started $(date) ==="
+brew update
+brew upgrade --formula
+brew upgrade --cask
+brew cleanup --prune=7
+echo "=== brew boot update finished $(date) ==="

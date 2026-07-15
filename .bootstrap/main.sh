@@ -139,6 +139,12 @@ link_claude_skills() {
 link_claude_skills "$HOME/.agents/skills"
 link_claude_skills "$HOME/projects/src/github.com/TheOutdoorProgrammer/home/skills"
 
+# Secrets pre-commit gate for the yadm repo — betterleaks scans staged changes
+# and blocks the commit on findings (these dotfiles are public).
+if command -v yadm &>/dev/null; then
+  yadm gitconfig core.hooksPath "$HOME/.config/yadm/git-hooks"
+fi
+
 # OnePassword Check
 if [ ! -f ~/OP.sh ]; then
   echo "export OP_SERVICE_ACCOUNT_TOKEN=\"\"" > ~/OP.sh

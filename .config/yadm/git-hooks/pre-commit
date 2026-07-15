@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Secrets gate for the yadm repo: scan staged changes with betterleaks
+# before they land in public dotfiles history. Bypass: git/yadm commit --no-verify.
+set -uo pipefail
+
+if ! command -v betterleaks >/dev/null 2>&1; then
+  echo "pre-commit: betterleaks not installed — 'brew install betterleaks' (it's in the Brewfile)" >&2
+  exit 1
+fi
+
+exec betterleaks git --pre-commit --staged --no-banner --redact=50 -v .

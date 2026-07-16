@@ -7,6 +7,9 @@
     "default": true,
     // MD013 line-length (default 80): off. The nag Joey never wants; prose and
     // doc tables routinely exceed 80 and reflowing them adds no value.
-    "MD013": false
+    "MD013": false,
+    // MD060 table-column-style: off. Flags compact separator rows (|---|---|)
+    // and pipe spacing — pure style pedantry that fires on every doc table here.
+    "MD060": false
   }
 }

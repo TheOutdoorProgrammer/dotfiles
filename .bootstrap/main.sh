@@ -31,39 +31,15 @@ duti -s com.sublimetext.4 .rb all
 duti -s com.sublimetext.4 .py all
 duti -s com.sublimetext.4 .go all
 
-# Install / configure asdf plugins
-asdf plugin add awscli
-asdf plugin add golang
-asdf plugin add kubectl
-asdf plugin add terraform
-asdf plugin add opentofu
-asdf plugin add nodejs
-asdf plugin add yarn
-asdf plugin add python
-asdf plugin add ruby
-asdf plugin add golangci-lint https://github.com/hypnoglow/asdf-golangci-lint.git
-
-asdf install awscli latest
-asdf install golang 1.17.6
-asdf install kubectl latest
-asdf install terraform latest
-asdf install opentofu latest
-asdf install nodejs lts
-asdf install yarn 1.22.17
-asdf install python 3.10.5
-asdf install ruby 3.1.2
-asdf install golangci-lint 1.64.8
-
-asdf set --home awscli latest
-asdf set --home golang 1.17.6
-asdf set --home kubectl latest
-asdf set --home terraform latest
-asdf set --home opentofu latest
-asdf set --home nodejs lts
-asdf set --home yarn 1.22.17
-asdf set --home python 3.10.5
-asdf set --home ruby 3.1.2
-asdf set --home golangci-lint 1.64.8
+# Install runtime versions via mise (brew formula; activated in .zshrc).
+# Tools + versions live in ~/.tool-versions (yadm-tracked), all pinned `latest`.
+# NOTE: Go is intentionally NOT managed by mise — it's a brew formula (see
+# Brewfile) and self-manages versions via GOTOOLCHAIN=auto per project. A managed
+# go shim shadowed brew on nvim's PATH and broke gopls. See the home repo's
+# docs/dev-environment.md.
+mise settings set auto_install true   # auto-install a project's pinned version on cd
+mise install                          # install latest of every tool in ~/.tool-versions
+mise reshim                           # shims for nvim (~/.local/share/mise/shims)
 
 npm install --global expo-cli commitizen cz-customizable
 

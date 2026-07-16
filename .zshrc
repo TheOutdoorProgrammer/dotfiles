@@ -41,13 +41,9 @@ eval "$(oh-my-posh init zsh --config /Users/$(whoami)/oh_my_posh.json)"
 # Built in config
 DEFAULT_USER=whoami
 
-# RBENV
-export PATH="$HOME/.rbenv/shims:$PATH"
-eval "$(rbenv init -)"
-
 # Application Configuration
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-[[ ! -f $BREW_PATH/opt/asdf/libexec/asdf.sh ]] || . $BREW_PATH/opt/asdf/libexec/asdf.sh
+eval "$(mise activate zsh)"
 export FZF_DEFAULT_OPTS='--color=fg:#f8f8f2,bg:#282a36,hl:#bd93f9 --color=fg+:#f8f8f2,bg+:#44475a,hl+:#bd93f9 --color=info:#ffb86c,prompt:#50fa7b,pointer:#ff79c6 --color=marker:#ff79c6,spinner:#ffb86c,header:#6272a4'
 export BAT_THEME="Dracula"
 
@@ -72,6 +68,10 @@ source ~/secrets.sh
 source ~/.config/zsh/cmux-goto.zsh
 export AWS_PAGER=""
 export GOPATH=~/projects
+# Go manages its own toolchain (brew installs one real `go`; each project's
+# go.mod/go.work version directive is auto-downloaded). Not asdf — the shim
+# indirection broke LSPs. See docs/dev-environment.md in the home repo.
+export GOTOOLCHAIN=auto
 export CDPATH=".:$HOME/projects"
 export BUILDKIT_PROGRESS=plain
 export AGENT_SLACK_SAFE_MODE=1  # agent-slack: send→draft redirect, edit/delete blocked (human in the loop, enforced)

@@ -1,0 +1,12 @@
+// Global markdownlint config (home dir → applies to every markdown file under ~
+// via markdownlint-cli2's upward config search). Keeps all default rules on
+// EXCEPT the ones below. Repos can still override with their own
+// .markdownlint-cli2.jsonc closer to the files.
+{
+  "config": {
+    "default": true,
+    // MD013 line-length (default 80): off. The nag Joey never wants; prose and
+    // doc tables routinely exceed 80 and reflowing them adds no value.
+    "MD013": false
+  }
+}

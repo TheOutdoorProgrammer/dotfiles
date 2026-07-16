@@ -72,7 +72,13 @@
     "refreshInterval": 10
   },
   "enabledPlugins": {
-    "plannotator@plannotator": true
+    "plannotator@plannotator": true,
+    "gopls-lsp@claude-plugins-official": true,
+    "lua-lsp@claude-plugins-official": true,
+    "pyright-lsp@claude-plugins-official": true,
+    "typescript-lsp@claude-plugins-official": true,
+    "opentofu-lsp@stout-plugins": true,
+    "markdown-lsp@stout-plugins": true
   },
   "extraKnownMarketplaces": {
     "plannotator": {
@@ -81,6 +87,18 @@
         "repo": "backnotprop/plannotator"
       },
       "autoUpdate": true
+    },
+    "claude-plugins-official": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/claude-plugins-official"
+      }
+    },
+    "stout-plugins": {
+      "source": {
+        "source": "directory",
+        "path": "/Users/joeystout/projects/src/github.com/TheOutdoorProgrammer/home/claude-plugins"
+      }
     }
   },
   "skipWorkflowUsageWarning": true,

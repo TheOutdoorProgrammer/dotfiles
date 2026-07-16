@@ -15,3 +15,21 @@ vim.opt.relativenumber = false
 -- per-project versions). Keep it that way; a managed `go` shim shadows brew and
 -- breaks gopls.
 vim.env.PATH = vim.fn.expand("~/.local/share/mise/shims") .. ":" .. vim.env.PATH
+
+-- Silence "watch.watch: ENOENT" spam from gopls. On macOS Neovim hardwires the
+-- libuv fs_event watcher (no fswatch/inotify path — see runtime _watchfiles.lua),
+-- and gopls (esp. with a go.work workspace) registers didChangeWatchedFiles bases
+-- that don't exist on disk. libuv can't fs_event_start a missing dir, so it errors.
+-- Guard the watcher: skip bases that aren't there (they're unwatchable regardless),
+-- otherwise defer to the real watchfunc so live file-watching is unchanged.
+do
+  local wf = require("vim.lsp._watchfiles")
+  local uv = vim.uv or vim.loop
+  local real = wf._watchfunc
+  wf._watchfunc = function(path, opts, cb)
+    if not uv.fs_stat(path) then
+      return function() end
+    end
+    return real(path, opts, cb)
+  end
+end

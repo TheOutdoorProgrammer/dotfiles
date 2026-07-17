@@ -8,9 +8,11 @@
 **/.tool-versions
 **/.sisyphus/**
 
-# Claude Code — ignore ephemeral/sensitive, track config
+# Claude Code — ignore ephemeral/sensitive, track config.
+# settings.json is deliberately NOT tracked: it's per-machine (model, plugins,
+# hooks) and Claude Code auto-writes to it (plugin installs), so tracking it
+# means constant dirty noise + machines clobbering each other.
 .claude/**
-!.claude/settings.json
 !.claude/statusline.sh
 !.claude/track-mcp-usage.sh
 !.claude/RTK.md

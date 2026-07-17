@@ -1,0 +1,15 @@
+# mini-1 — headless agent/server box. Deliberately minimal: no oh-my-zsh,
+# no prompt theming, no slow secrets sourcing (agent shells spawn constantly).
+export PATH="$HOME/bin:/opt/homebrew/bin:$HOME/go/bin:$PATH"
+
+alias k=kubectl
+
+# 1Password service-account token + vault helper (both fast, both guarded)
+[ -f ~/OP.sh ] && source ~/OP.sh
+[ -f ~/functions.sh ] && source ~/functions.sh
+
+# Go toolchain self-manages from go.mod/go.work (brew go, no version manager)
+export GOTOOLCHAIN=auto
+
+# mise-managed runtimes (guarded — activation is cheap, shims are not used here)
+command -v mise >/dev/null && eval "$(mise activate zsh)"

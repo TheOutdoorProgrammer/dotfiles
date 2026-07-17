@@ -1,6 +1,18 @@
 # mini-1 — headless agent/server box. Deliberately minimal: no oh-my-zsh,
 # no prompt theming, no slow secrets sourcing (agent shells spawn constantly).
-export PATH="$HOME/bin:/opt/homebrew/bin:$HOME/go/bin:$PATH"
+# PATH/GOPATH lines mirror .zshrc##default VERBATIM so binaries resolve in the
+# same places on both machines — keep them in sync when editing either file.
+
+# Homebrew Path Mac M1
+export PATH="/opt/homebrew/bin:$PATH"
+# Homebrew Path Intel
+export PATH="/usr/local/sbin:$PATH"
+# Custom Path
+export PATH="$HOME/bin:$PATH"
+# GO Path
+export PATH="$HOME/projects/bin:$PATH"
+# BUN path
+export PATH="$HOME/.bun/bin:$PATH"
 
 alias k=kubectl
 
@@ -8,8 +20,24 @@ alias k=kubectl
 [ -f ~/OP.sh ] && source ~/OP.sh
 [ -f ~/functions.sh ] && source ~/functions.sh
 
-# Go toolchain self-manages from go.mod/go.work (brew go, no version manager)
-export GOTOOLCHAIN=auto
-
-# mise-managed runtimes (guarded — activation is cheap, shims are not used here)
+# mise-managed runtimes
 command -v mise >/dev/null && eval "$(mise activate zsh)"
+
+export GOPATH=~/projects
+export GOTOOLCHAIN=auto
+export CDPATH=".:$HOME/projects"
+
+export PATH="/Applications/Sublime Text.app/Contents/SharedSupport/bin:$PATH"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+# Android SDK
+export ANDROID_HOME=$HOME/Library/Android/sdk
+export PATH=$PATH:$ANDROID_HOME/emulator
+export PATH=$PATH:$ANDROID_HOME/platform-tools
+export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin
+
+export PATH="/Users/joeystout/.rd/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"

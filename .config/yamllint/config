@@ -1,0 +1,13 @@
+---
+# Global yamllint config. Two default rules are wrong for the YAML I write
+# (k8s/Flux manifests, GitHub Actions, ConfigMaps that embed whole scripts as
+# block scalars) and are disabled:
+#   - line-length: manifests routinely exceed 80 chars; embedded scripts can't
+#     be wrapped to satisfy it.
+#   - document-start: single-doc k8s/kustomize files commonly omit "---".
+extends: default
+rules:
+  line-length: disable
+  document-start: disable
+  truthy:
+    check-keys: false

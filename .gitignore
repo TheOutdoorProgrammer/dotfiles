@@ -18,6 +18,7 @@
 !.claude/RTK.md
 !.claude/CLAUDE.md
 !.claude/mcp-servers.json
+!.claude/mcp-path-wrapper.sh
 !.claude/commands/
 !.claude/commands/**
 !.claude/skills/

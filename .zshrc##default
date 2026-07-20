@@ -103,3 +103,8 @@ export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin
 export PATH="/Users/joeystout/.rd/bin:$PATH"
 ### MANAGED BY RANCHER DESKTOP END (DO NOT EDIT)
 export PATH="$HOME/.local/bin:$PATH"
+
+# Capture the fully-built interactive PATH for cmux team agents. Teammates launch
+# with a stripped PATH; the ollie-hooks teammate-env rule prepends this so gh,
+# boards, joey, mise, rtk, etc. resolve. Must be the LAST PATH line in this file.
+print -r -- "$PATH" > "$HOME/.claude/teammate-path"

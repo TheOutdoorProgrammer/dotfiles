@@ -62,5 +62,31 @@ export AIRTRAIL_API_KEY=$(<"$_secrets_tmp/airtrail")
 #export ANTHROPIC_BASE_URL=https://ai.stout.zone
 #export ANTHROPIC_CUSTOM_HEADERS="x-litellm-api-key: Bearer $LITELLM_WORK_API_KEY"
 
+# Cache secrets for cmux team agents. Teammates launch with a stripped env and
+# cannot reach 1Password, so the ollie-hooks teammate-env rule sources this into
+# their Bash and ~/.claude/mcp-path-wrapper.sh sources it for stdio MCP servers.
+# Mode 600, git-ignored. The var list is derived from this script's own `export`
+# lines so it never drifts.
+#
+# Written ATOMICALLY (temp + mv) and ONLY when the critical token actually
+# resolved — a shell whose fetch failed or timed out must NOT clobber a good
+# cache that running teammates depend on. `emulate -L zsh` isolates the block
+# from the interactive shell's options (nounset/errexit/pipefail).
+if [[ -n "$GITHUB_TOKEN" && -d "$HOME/.claude" ]]; then
+  (
+    emulate -L zsh
+    umask 077
+    _tmp=$(mktemp "$HOME/.claude/.teammate-secrets.XXXXXX") || exit
+    for _v in ${(f)"$(grep -oE '^export [A-Z_][A-Z0-9_]*' "$HOME/secrets.sh" | awk '{print $2}')"}; do
+      print -r -- "export ${_v}=${(qq)${(P)_v}}"
+    done > "$_tmp"
+    if [[ -s "$_tmp" ]]; then
+      mv -f "$_tmp" "$HOME/.claude/teammate-secrets.env"
+    else
+      rm -f "$_tmp"
+    fi
+  )
+fi
+
 rm -rf "$_secrets_tmp"
 unset _secrets_tmp

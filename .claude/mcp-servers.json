@@ -4,11 +4,15 @@
     "url": "https://mcp.context7.com/mcp"
   },
   "github": {
-    "type": "http",
-    "url": "https://api.githubcopilot.com/mcp/",
-    "headers": {
-      "Authorization": "Bearer ${GITHUB_TOKEN}"
-    }
+    "type": "stdio",
+    "command": "/Users/joeystout/.claude/mcp-path-wrapper.sh",
+    "args": [
+      "npx",
+      "mcp-remote",
+      "https://api.githubcopilot.com/mcp/",
+      "--header",
+      "Authorization: Bearer ${GITHUB_TOKEN}"
+    ]
   },
   "grep": {
     "type": "http",
@@ -20,15 +24,17 @@
   },
   "obsidian": {
     "type": "stdio",
-    "command": "bun",
+    "command": "/Users/joeystout/.claude/mcp-path-wrapper.sh",
     "args": [
+      "bun",
       "/Users/joeystout/projects/src/github.com/fazer-ai/mcp-obsidian/dist/index.js"
     ]
   },
   "google-calendar": {
     "type": "stdio",
-    "command": "npx",
+    "command": "/Users/joeystout/.claude/mcp-path-wrapper.sh",
     "args": [
+      "npx",
       "@cocal/google-calendar-mcp"
     ],
     "env": {
@@ -37,16 +43,18 @@
   },
   "granola": {
     "type": "stdio",
-    "command": "npx",
+    "command": "/Users/joeystout/.claude/mcp-path-wrapper.sh",
     "args": [
+      "npx",
       "mcp-remote",
       "https://mcp.granola.ai/mcp"
     ]
   },
   "notion": {
     "type": "stdio",
-    "command": "npx",
+    "command": "/Users/joeystout/.claude/mcp-path-wrapper.sh",
     "args": [
+      "npx",
       "mcp-remote",
       "https://mcp.notion.com/mcp"
     ]

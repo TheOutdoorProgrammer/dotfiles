@@ -77,7 +77,11 @@ if [[ -n "$GITHUB_TOKEN" && -d "$HOME/.claude" ]]; then
     emulate -L zsh
     umask 077
     _tmp=$(mktemp "$HOME/.claude/.teammate-secrets.XXXXXX") || exit
-    for _v in ${(f)"$(grep -oE '^export [A-Z_][A-Z0-9_]*' "$HOME/secrets.sh" | awk '{print $2}')"}; do
+    # Pure-zsh parse, NOT grep/awk/cat: `grep` is aliased to ripgrep (reads -E as
+    # --encoding) and `cat` to bat, so those silently break in the interactive shell.
+    for _line in ${(f)"$(<"$HOME/secrets.sh")"}; do
+      [[ $_line == 'export '[A-Za-z_]* ]] || continue
+      _v=${${_line#export }%%=*}
       print -r -- "export ${_v}=${(qq)${(P)_v}}"
     done > "$_tmp"
     if [[ -s "$_tmp" ]]; then

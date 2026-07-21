@@ -1,0 +1,6 @@
+std = "neovim"
+
+# LazyVim plugin specs are mixed tables by design ({ "repo", opts = ... }),
+# so the mixed_table lint is noise for this config.
+[lints]
+mixed_table = "allow"

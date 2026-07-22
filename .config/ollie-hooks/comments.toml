@@ -1,0 +1,10 @@
+# ollie-hooks comment gate (rule "comments"). Tunes without a rebuild.
+# Omitted keys keep the built-in defaults shown below.
+
+enabled = true
+# A touched comment fires if its block exceeds this many lines...
+max_comment_lines = 3
+# ...or any of its lines exceeds this length.
+max_line_length = 80
+# Also fire on agent-memo phrasing ("changed X to Y", "this implements", arrows).
+agent_memo = true

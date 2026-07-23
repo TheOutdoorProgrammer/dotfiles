@@ -12,18 +12,18 @@ _fetch() {
   _secrets_pids+=($!)
 }
 
-_fetch github_token  vault get "GitHub Personal Access Token"
-_fetch dockerhub     vault get "DockerHub"
-_fetch openai        vault get "OpenAPI Key"
-_fetch cloudflare    vault get "Cloudflare API Key"
-_fetch smithery      vault get "Smithery API Key"
-_fetch perplexity    vault get "perplexity_api_key"
-_fetch obsidian      vault get "Obsidian API Key"
-_fetch slack         vault get "SLACK_WORKSPACE_URL"
-_fetch gemini        vault get "GEMINI_API_KEY"
-_fetch airtrail      vault get "AirTrail API Key"
-#_fetch litellm       vault get "LiteLLM API Key"
-#_fetch litellm_work  vault get "LiteLLM Work API Key"
+_fetch github_token  joey vault get "GitHub Personal Access Token"
+_fetch dockerhub     joey vault get "DockerHub"
+_fetch openai        joey vault get "OpenAPI Key"
+_fetch cloudflare    joey vault get "Cloudflare API Key"
+_fetch smithery      joey vault get "Smithery API Key"
+_fetch perplexity    joey vault get "perplexity_api_key"
+_fetch obsidian      joey vault get "Obsidian API Key"
+_fetch slack         joey vault get "SLACK_WORKSPACE_URL"
+_fetch gemini        joey vault get "GEMINI_API_KEY"
+_fetch airtrail      joey vault get "AirTrail API Key"
+#_fetch litellm       joey vault get "LiteLLM API Key"
+#_fetch litellm_work  joey vault get "LiteLLM Work API Key"
 _fetch spacelift     spacectl profile export-token
 
 # Watchdog: kill any stragglers after 60s

@@ -69,3 +69,7 @@
 	helper = !/opt/homebrew/bin/gh auth git-credential
 [ghq]
 	root = /Users/joeystout/projects/src
+[git-town]
+	main-branch = main
+	sync-feature-strategy = rebase
+	sync-perennial-strategy = rebase

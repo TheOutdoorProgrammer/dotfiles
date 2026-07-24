@@ -1,26 +1,37 @@
 #!/usr/bin/env bash
-# PATH shim for `open`. Inside cmux, open a lone http(s):// URL as a browser TAB
-# and RIP you straight to it — switch to its workspace AND select the exact tab.
+# PATH shim for `open`. Routes a lone http(s):// URL by destination:
+#   - localhost / 127.0.0.1 (inside cmux) -> browser TAB in cmux, RIPs you to it
+#   - any other http(s) URL              -> Google Chrome
+#   - everything else (files, apps, flags, multiple args) -> real /usr/bin/open
 #
-# Why two steps: `new-surface --focus true` switches the workspace but reverts to
-# the workspace's last-selected surface (your terminal), so the new tab isn't
+# Why the cmux two-step: `new-surface --focus true` switches the workspace but
+# reverts to its last-selected surface (your terminal), so the new tab isn't
 # focused across a workspace switch. The cmux:// navigation deep-link runs cmux's
-# `focusTab` (select workspace + select surface), which reliably lands you on the
-# exact tab. We create the tab (unfocused), then deep-link to it.
-#
-# Everything else — files, apps, flags, multiple args, or outside cmux — falls
-# through to the real /usr/bin/open unchanged.
-if [ -n "$CMUX_SURFACE_ID" ] && [ "$#" -eq 1 ]; then
+# `focusTab` (select workspace + surface), which reliably lands on the exact tab.
+
+open_in_cmux() {
+  # --id-format uuids prints: OK <surfaceUUID> <paneUUID> <workspaceUUID>
+  local out surf ws
+  out=$(cmux new-surface --type browser --url "$1" --focus false --id-format uuids 2>/dev/null)
+  surf=$(printf '%s' "$out" | awk '/^OK/{print $2}')
+  ws=$(printf '%s' "$out" | awk '/^OK/{print $4}')
+  if [ -n "$ws" ] && [ -n "$surf" ]; then
+    exec /usr/bin/open "cmux://workspace/$ws/surface/$surf"
+  fi
+  exit 0
+}
+
+# Regex in a var, not inline: bash mangles \[ inside a literal [[ =~ ]] pattern.
+localhost_re='^https?://(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\])(:[0-9]+)?([/?#]|$)'
+
+if [ "$#" -eq 1 ]; then
   case "$1" in
     http://* | https://*)
-      # --id-format uuids prints: OK <surfaceUUID> <paneUUID> <workspaceUUID>
-      out=$(cmux new-surface --type browser --url "$1" --focus false --id-format uuids 2>/dev/null)
-      surf=$(printf '%s' "$out" | awk '/^OK/{print $2}')
-      ws=$(printf '%s' "$out" | awk '/^OK/{print $4}')
-      if [ -n "$ws" ] && [ -n "$surf" ]; then
-        exec /usr/bin/open "cmux://workspace/$ws/surface/$surf"
+      if [[ "$1" =~ $localhost_re ]]; then
+        [ -n "$CMUX_SURFACE_ID" ] && open_in_cmux "$1"
+        exec /usr/bin/open -a "Google Chrome" "$1"
       fi
-      exit 0
+      exec /usr/bin/open -a "Google Chrome" "$1"
       ;;
   esac
 fi

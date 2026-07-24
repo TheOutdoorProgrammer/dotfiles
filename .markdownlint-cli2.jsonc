@@ -10,6 +10,13 @@
     "MD013": false,
     // MD060 table-column-style: off. Flags compact separator rows (|---|---|)
     // and pipe spacing — pure style pedantry that fires on every doc table here.
-    "MD060": false
+    "MD060": false,
+    // MD010 no-hard-tabs: off. Fenced Go code blocks are gofmt'd (tab-indented);
+    // flagging them fires on every doc with a code example.
+    "MD010": false,
+    // MD041 first-line-heading: accept `name:` (not just `title:`) as the front
+    // matter title. Claude Code memory files are frontmatter-first with a
+    // `name:` slug and no leading H1 — without this every memory write is nagged.
+    "MD041": { "front_matter_title": "^\\s*(name|title)\\s*[:=]" }
   }
 }

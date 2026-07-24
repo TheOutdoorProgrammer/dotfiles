@@ -12,9 +12,32 @@
 # Open a terminal yourself if you need one. Requires: ghq, fzf, cmux.
 # Only works from inside cmux (needs the socket).
 
-# Static pane layout: left = cmux claude-teams, right = nvim at the project.
+zmodload zsh/datetime 2>/dev/null  # EPOCHREALTIME, used to seed color RANDOM
+
+# Static pane layout: left = j claude teams, right = nvim at the project.
 # cwd for every pane comes from `new-workspace --cwd`, so nothing needs interpolating here.
-_CMUX_GOTO_LAYOUT='{"direction":"horizontal","split":0.45,"children":[{"pane":{"surfaces":[{"type":"terminal","command":"cmux claude-teams"}]}},{"pane":{"surfaces":[{"type":"terminal","command":"nvim ."}]}}]}'
+_CMUX_GOTO_LAYOUT='{"direction":"horizontal","split":0.45,"children":[{"pane":{"surfaces":[{"type":"terminal","command":"j claude teams --dangerously-skip-permissions"}]}},{"pane":{"surfaces":[{"type":"terminal","command":"nvim ."}]}}]}'
+
+# Session accents; the claude-teams shim reads them back to match the agents
+# folder. Preferred = Dracula Classic; fallback used only when all are taken.
+_CMUX_GOTO_DRACULA=(
+  '#FF5555' '#FFB86C' '#F1FA8C' '#50FA7B' '#8BE9FD' '#BD93F9' '#FF79C6' '#6272A4'
+  '#FF6E6E' '#69FF94' '#FFFFA5' '#D6ACFF' '#FF92DF' '#A4FFFF'
+)
+_CMUX_GOTO_FALLBACK=('#FF8C42' '#C3F73A' '#43D9C4' '#62A0FF' '#FF5FD2')
+
+# Prefer an unused Dracula accent, then unused fallback, then any Dracula.
+_cmux_goto_pick_color() {
+  local -a used avail
+  used=("${(@f)$(CMUX_QUIET=1 cmux workspace list --json 2>/dev/null \
+    | jq -r '.workspaces[]?.custom_color // empty')}")
+  avail=(${_CMUX_GOTO_DRACULA:|used})
+  (( $#avail )) || avail=(${_CMUX_GOTO_FALLBACK:|used})
+  (( $#avail )) || avail=($_CMUX_GOTO_DRACULA)
+  # Sub-second seed so back-to-back $()-forked calls don't repeat a pick.
+  RANDOM=${EPOCHREALTIME#*.}
+  print -r -- ${avail[RANDOM % $#avail + 1]}
+}
 
 # Open a repo dir as a named, org-grouped, pre-laid-out workspace.
 _cmux_goto_open() {
@@ -32,6 +55,10 @@ _cmux_goto_open() {
   local ws
   ws=$(CMUX_QUIET=1 cmux new-workspace "${args[@]}" 2>/dev/null | awk '/workspace:/{print $2}')
   [[ -z "$ws" ]] && { print -u2 "cmux-goto: failed to create workspace for $dir"; return 1 }
+
+  # Tag the session with an accent so its agents can be matched to it.
+  local color=$(_cmux_goto_pick_color)
+  CMUX_QUIET=1 cmux workspace-action --action set-color --workspace "$ws" --color "$color" >/dev/null 2>&1
 
   # First repo for this org -> create the group, anchored on this workspace.
   [[ -z "$group" ]] && CMUX_QUIET=1 cmux workspace-group create --name "$org" --from "$ws" >/dev/null 2>&1

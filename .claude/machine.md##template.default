@@ -1,0 +1,16 @@
+# This Machine
+
+Facts about the host this session is running on. Rendered from the live system by
+yadm's template processor — the source is `.claude/machine.md##template.default`
+in the dotfiles repo, re-rendered on every `yadm alt`. Authoritative for this
+session; the home repo README explains what each machine implies.
+
+| Fact | Value |
+| --- | --- |
+| Hostname | `{{yadm.hostname}}` |
+| Architecture | `{{yadm.arch}}` |
+| OS | `{{yadm.os}}` |
+| User | `{{yadm.user}}` |
+
+See the home repo README § Which machine am I on for what this host means for
+session mode, review flow, and which services are local versus remote from here.

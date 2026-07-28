@@ -19,6 +19,8 @@
 !.claude/CLAUDE.md
 !.claude/mcp-servers.json
 !.claude/mcp-path-wrapper.sh
+# The template is tracked; its rendered output (.claude/machine.md) stays ignored.
+!.claude/machine.md##template.default
 !.claude/commands/
 !.claude/commands/**
 !.claude/skills/

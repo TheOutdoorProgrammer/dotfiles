@@ -20,9 +20,9 @@ brew "fswatch"
 brew "fzf"
 brew "gawk"
 brew "gh"
-brew "ghq"        # pinned — joey's `git` wrapper depends on it (clone→ghq)
+brew "ghq"        # joey's `git` wrapper depends on it (clone→ghq)
 brew "git-lfs"
-brew "git-town"   # pinned — joey's `git` wrapper depends on it (hack/sync/propose)
+brew "git-town"   # joey's `git` wrapper depends on it (hack/sync/propose)
 brew "go"
 brew "goreleaser"
 brew "gpg"

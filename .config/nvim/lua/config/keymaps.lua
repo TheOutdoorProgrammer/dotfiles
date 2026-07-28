@@ -2,6 +2,12 @@
 -- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
 -- Add any additional keymaps here
 
+-- <leader>cd is goto-definition (lua/plugins/lsp-keymaps.lua), so LazyVim's
+-- Line Diagnostics float moves to <leader>ce. Global, not LSP-gated: linters
+-- produce diagnostics too.
+vim.keymap.set("n", "<leader>ce", vim.diagnostic.open_float, { desc = "Line Diagnostics" })
+vim.keymap.del("n", "<leader>cd")
+
 -- Ctrl+click a symbol to jump to its definition (Cmd+click can't reach a terminal
 -- app — the mouse protocol has no Cmd modifier). <LeftMouse> positions the cursor
 -- first, then LSP jumps.

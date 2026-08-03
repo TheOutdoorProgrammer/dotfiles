@@ -4,6 +4,16 @@
 
 zmodload zsh/datetime 2>/dev/null  # EPOCHREALTIME, used to seed color RANDOM
 
+# The CLI of the app we're running in. PATH's `cmux` is the cask build, whose
+# flags lag a locally-built app's — so `--folder` would look unsupported.
+_cmux_goto_cli() {
+  if [[ -n "${CMUX_BUNDLED_CLI_PATH:-}" && -x "${CMUX_BUNDLED_CLI_PATH}" ]]; then
+    print -r -- "$CMUX_BUNDLED_CLI_PATH"
+  else
+    print -r -- cmux
+  fi
+}
+
 # Single full-width pane: j claude teams. cwd comes from `new-workspace --cwd`,
 # so nothing needs interpolating here.
 _CMUX_GOTO_LAYOUT='{"pane":{"surfaces":[{"type":"terminal","command":"j claude teams --dangerously-skip-permissions"}]}}'
@@ -19,7 +29,8 @@ _CMUX_GOTO_FALLBACK=('#FF8C42' '#C3F73A' '#43D9C4' '#62A0FF' '#FF5FD2')
 # Prefer an unused Dracula accent, then unused fallback, then any Dracula.
 _cmux_goto_pick_color() {
   local -a used avail
-  used=("${(@f)$(CMUX_QUIET=1 cmux workspace list --json 2>/dev/null \
+  local cli=$(_cmux_goto_cli)
+  used=("${(@f)$(CMUX_QUIET=1 "$cli" workspace list --json 2>/dev/null \
     | jq -r '.workspaces[]?.custom_color // empty')}")
   avail=(${_CMUX_GOTO_DRACULA:|used})
   (( $#avail )) || avail=(${_CMUX_GOTO_FALLBACK:|used})
@@ -34,9 +45,10 @@ _cmux_goto_open() {
   local dir=$1 org name group
   org=${dir:h:t}    # …/github.com/ORG/REPO -> ORG
   name=${dir:t}     # -> REPO (workspace name)
+  local cli=$(_cmux_goto_cli)
 
   # Re-use an existing sidebar group for this org if there is one.
-  group=$(CMUX_QUIET=1 cmux workspace-group list --json 2>/dev/null \
+  group=$(CMUX_QUIET=1 "$cli" workspace-group list --json 2>/dev/null \
     | jq -r --arg o "$org" '.groups[]? | select(.name==$o) | .ref' 2>/dev/null | head -1)
 
   # `--folder` (cmux fork) = header is chrome, not a terminal. Older cmux has no
@@ -44,12 +56,12 @@ _cmux_goto_open() {
   # renames the first repo session to the org and swallows its sidebar row.
   if [[ -z "$group" ]]; then
     local -a create_args=(--name "$org" --json)
-    if cmux workspace-group --help 2>/dev/null | grep -q -- '--folder'; then
+    if "$cli" workspace-group --help 2>/dev/null | grep -q -- '--folder'; then
       create_args+=(--folder)
     else
       create_args+=(--cwd "${dir:h}")
     fi
-    group=$(CMUX_QUIET=1 cmux workspace-group create "${create_args[@]}" 2>/dev/null \
+    group=$(CMUX_QUIET=1 "$cli" workspace-group create "${create_args[@]}" 2>/dev/null \
       | jq -r '.group.ref // empty' 2>/dev/null)
   fi
 
@@ -57,12 +69,12 @@ _cmux_goto_open() {
   [[ -n "$group" ]] && args+=(--group "$group")
 
   local ws
-  ws=$(CMUX_QUIET=1 cmux new-workspace "${args[@]}" 2>/dev/null | awk '/workspace:/{print $2}')
+  ws=$(CMUX_QUIET=1 "$cli" new-workspace "${args[@]}" 2>/dev/null | awk '/workspace:/{print $2}')
   [[ -z "$ws" ]] && { print -u2 "cmux-goto: failed to create workspace for $dir"; return 1 }
 
   # Tag the session with an accent so its agents can be matched to it.
   local color=$(_cmux_goto_pick_color)
-  CMUX_QUIET=1 cmux workspace-action --action set-color --workspace "$ws" --color "$color" >/dev/null 2>&1
+  CMUX_QUIET=1 "$cli" workspace-action --action set-color --workspace "$ws" --color "$color" >/dev/null 2>&1
   return 0
 }
 

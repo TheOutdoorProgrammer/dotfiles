@@ -6,27 +6,42 @@
 #
 # Selecting the new tab takes one of two paths:
 #   1. `focus-panel --no-activate` selects it inside its workspace and leaves your
-#      view alone, so a review/question page waits instead of interrupting.
+#      view alone, so a review/question page waits instead of interrupting. A
+#      `notify --surface` badges the tab so a waiting page is still noticeable.
 #   2. Without that flag, the cmux:// deep-link runs `focusTab`, which lands on the
 #      exact tab but switches you to its workspace. (`new-surface --focus true` is
 #      not an option either way: it switches workspace AND reverts to that
 #      workspace's last-selected surface, so the new tab isn't focused at all.)
 #
+# The CLI of the app we're running in. PATH's `cmux` is the cask build, whose
+# flags lag a locally-built app's, so --no-activate would look unsupported.
+cmux_cli() {
+  if [ -n "${CMUX_BUNDLED_CLI_PATH:-}" ] && [ -x "${CMUX_BUNDLED_CLI_PATH}" ]; then
+    printf '%s\n' "$CMUX_BUNDLED_CLI_PATH"
+  else
+    printf '%s\n' cmux
+  fi
+}
+
 # Probing --help rather than trusting an exit code: older cmux ignores unknown
 # flags on focus-panel, so it would "succeed" and rip you away regardless.
 cmux_supports_select_in_place() {
-  cmux focus-panel --help 2>/dev/null | grep -q -- '--no-activate'
+  "$1" focus-panel --help 2>/dev/null | grep -q -- '--no-activate'
 }
 
 open_in_cmux() {
   # --id-format uuids prints: OK <surfaceUUID> <paneUUID> <workspaceUUID>
-  local out surf ws
-  out=$(cmux new-surface --type browser --url "$1" --focus false --id-format uuids 2>/dev/null)
+  local out surf ws cli
+  cli=$(cmux_cli)
+  out=$("$cli" new-surface --type browser --url "$1" --focus false --id-format uuids 2>/dev/null)
   surf=$(printf '%s' "$out" | awk '/^OK/{print $2}')
   ws=$(printf '%s' "$out" | awk '/^OK/{print $4}')
   if [ -n "$ws" ] && [ -n "$surf" ]; then
-    if cmux_supports_select_in_place; then
-      cmux focus-panel --panel "$surf" --workspace "$ws" --no-activate >/dev/null 2>&1
+    if cmux_supports_select_in_place "$cli"; then
+      "$cli" focus-panel --panel "$surf" --workspace "$ws" --no-activate >/dev/null 2>&1
+      # Selected but out of sight, so badge the tab — cmux clears it when opened.
+      # Not on the fallback path below, which already puts the tab in your face.
+      "$cli" notify --surface "$surf" --title "Waiting for you" --body "$1" >/dev/null 2>&1
       exit 0
     fi
     exec /usr/bin/open "cmux://workspace/$ws/surface/$surf"

@@ -1,0 +1,6 @@
+# Global swiftlint defaults for the ollie-hooks lint rule; a repo-local
+# .swiftlint.yml overrides it wholesale. Both rules below are whole-file size
+# metrics — unclearable by any small edit, so pure noise in a per-edit gate.
+disabled_rules:
+  - file_length
+  - type_body_length

@@ -39,11 +39,17 @@ _cmux_goto_open() {
   group=$(CMUX_QUIET=1 cmux workspace-group list --json 2>/dev/null \
     | jq -r --arg o "$org" '.groups[]? | select(.name==$o) | .ref' 2>/dev/null | head -1)
 
-  # A cmux group header IS its anchor workspace, so each org gets a throwaway
-  # anchor. Do NOT anchor with `--from "$ws"`: that renames the first repo
-  # session to the org and swallows its sidebar row.
+  # `--folder` (cmux fork) = header is chrome, not a terminal. Older cmux has no
+  # such thing, so fall back to a throwaway anchor — never `--from "$ws"`, which
+  # renames the first repo session to the org and swallows its sidebar row.
   if [[ -z "$group" ]]; then
-    group=$(CMUX_QUIET=1 cmux workspace-group create --name "$org" --cwd "${dir:h}" --json 2>/dev/null \
+    local -a create_args=(--name "$org" --json)
+    if cmux workspace-group --help 2>/dev/null | grep -q -- '--folder'; then
+      create_args+=(--folder)
+    else
+      create_args+=(--cwd "${dir:h}")
+    fi
+    group=$(CMUX_QUIET=1 cmux workspace-group create "${create_args[@]}" 2>/dev/null \
       | jq -r '.group.ref // empty' 2>/dev/null)
   fi
 

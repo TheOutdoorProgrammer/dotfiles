@@ -69,6 +69,8 @@ brew "ykman"
 brew "ykpers"
 brew "ytt"
 brew "yubikey-personalization"
+# zig builds GhosttyKit.xcframework when building cmux from source (its scripts/setup.sh).
+brew "zig"
 brew "zsh-syntax-highlighting"
 brew "oh-my-posh"
 

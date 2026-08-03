@@ -1,22 +1,12 @@
-# cmux-goto — "go to project" launcher (James-style), bound to Ctrl+G.
-#
-#   Ctrl+G  ->  fuzzy-pick a repo (ghq) -> open a NEW cmux workspace named after
-#               the repo, grouped in the sidebar by org, with this layout:
-#
-#     ┌───────────────┬──────────────┐
-#     │               │              │
-#     │ claude-teams  │   nvim .     │
-#     │  (left panel) │ (file tree)  │
-#     └───────────────┴──────────────┘
-#
-# Open a terminal yourself if you need one. Requires: ghq, fzf, cmux.
-# Only works from inside cmux (needs the socket).
+# cmux-goto — Ctrl+G: fuzzy-pick a ghq repo, open it as a new cmux workspace
+# named after the repo, org-grouped in the sidebar, running claude-teams.
+# Requires ghq/fzf/cmux, and the cmux socket (so: only from inside cmux).
 
 zmodload zsh/datetime 2>/dev/null  # EPOCHREALTIME, used to seed color RANDOM
 
-# Static pane layout: left = j claude teams, right = nvim at the project.
-# cwd for every pane comes from `new-workspace --cwd`, so nothing needs interpolating here.
-_CMUX_GOTO_LAYOUT='{"direction":"horizontal","split":0.45,"children":[{"pane":{"surfaces":[{"type":"terminal","command":"j claude teams --dangerously-skip-permissions"}]}},{"pane":{"surfaces":[{"type":"terminal","command":"nvim ."}]}}]}'
+# Single full-width pane: j claude teams. cwd comes from `new-workspace --cwd`,
+# so nothing needs interpolating here.
+_CMUX_GOTO_LAYOUT='{"pane":{"surfaces":[{"type":"terminal","command":"j claude teams --dangerously-skip-permissions"}]}}'
 
 # Session accents; the claude-teams shim reads them back to match the agents
 # folder. Preferred = Dracula Classic; fallback used only when all are taken.
@@ -49,6 +39,14 @@ _cmux_goto_open() {
   group=$(CMUX_QUIET=1 cmux workspace-group list --json 2>/dev/null \
     | jq -r --arg o "$org" '.groups[]? | select(.name==$o) | .ref' 2>/dev/null | head -1)
 
+  # A cmux group header IS its anchor workspace, so each org gets a throwaway
+  # anchor. Do NOT anchor with `--from "$ws"`: that renames the first repo
+  # session to the org and swallows its sidebar row.
+  if [[ -z "$group" ]]; then
+    group=$(CMUX_QUIET=1 cmux workspace-group create --name "$org" --cwd "${dir:h}" --json 2>/dev/null \
+      | jq -r '.group.ref // empty' 2>/dev/null)
+  fi
+
   local args=(--name "$name" --cwd "$dir" --focus true --layout "$_CMUX_GOTO_LAYOUT")
   [[ -n "$group" ]] && args+=(--group "$group")
 
@@ -59,9 +57,6 @@ _cmux_goto_open() {
   # Tag the session with an accent so its agents can be matched to it.
   local color=$(_cmux_goto_pick_color)
   CMUX_QUIET=1 cmux workspace-action --action set-color --workspace "$ws" --color "$color" >/dev/null 2>&1
-
-  # First repo for this org -> create the group, anchored on this workspace.
-  [[ -z "$group" ]] && CMUX_QUIET=1 cmux workspace-group create --name "$org" --from "$ws" >/dev/null 2>&1
   return 0
 }
 

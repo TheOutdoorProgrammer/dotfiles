@@ -33,7 +33,12 @@ open_in_cmux() {
   # --id-format uuids prints: OK <surfaceUUID> <paneUUID> <workspaceUUID>
   local out surf ws cli
   cli=$(cmux_cli)
-  out=$("$cli" new-surface --type browser --url "$1" --focus false --id-format uuids 2>/dev/null)
+  # Pin the target workspace. Without --workspace, cmux resolves its own default,
+  # which put agent-opened tabs in whatever workspace happened to be selected —
+  # so the tab landed wherever the user was standing, racing their clicks.
+  local -a target=()
+  [ -n "${CMUX_WORKSPACE_ID:-}" ] && target=(--workspace "$CMUX_WORKSPACE_ID")
+  out=$("$cli" new-surface --type browser --url "$1" --focus false --id-format uuids "${target[@]}" 2>/dev/null)
   surf=$(printf '%s' "$out" | awk '/^OK/{print $2}')
   ws=$(printf '%s' "$out" | awk '/^OK/{print $4}')
   if [ -n "$ws" ] && [ -n "$surf" ]; then

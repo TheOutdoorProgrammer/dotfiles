@@ -40,6 +40,8 @@ brew "lazygit"
 brew "lua-language-server"
 brew "markdownlint-cli2"
 brew "mas"
+# mermaid-ascii has no formula in core and upstream publishes no tap, so it is
+# NOT here — scripts/boot-update.sh `go install`s it (home repo ADR 0001).
 brew "mise"
 brew "neovim"
 brew "languagetool"

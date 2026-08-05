@@ -65,7 +65,7 @@ alias code="j claude teams --dangerously-skip-permissions"
 # Personal Stuff
 source ~/functions.sh
 source ~/secrets.sh
-source ~/.config/zsh/cmux-goto.zsh
+source ~/.config/zsh/muxy-goto.zsh
 export AWS_PAGER=""
 export GOPATH=~/projects
 # Go manages its own toolchain (brew installs one real `go`; each project's
@@ -104,7 +104,7 @@ export PATH="/Users/joeystout/.rd/bin:$PATH"
 ### MANAGED BY RANCHER DESKTOP END (DO NOT EDIT)
 export PATH="$HOME/.local/bin:$PATH"
 
-# Capture the fully-built interactive PATH for cmux team agents. Teammates launch
-# with a stripped PATH; the ollie-hooks teammate-env rule prepends this so gh,
-# boards, joey, mise, rtk, etc. resolve. Must be the LAST PATH line in this file.
+# Capture the fully-built interactive PATH for team agents, read by the
+# ollie-hooks teammate-env rule when a teammate launches without it. Inert under
+# muxy, which gives teammates a login shell. Must be the LAST PATH line here.
 print -r -- "$PATH" > "$HOME/.claude/teammate-path"

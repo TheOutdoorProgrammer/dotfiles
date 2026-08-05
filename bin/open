@@ -1,56 +1,28 @@
 #!/usr/bin/env bash
 # PATH shim for `open`. Routes a lone http(s):// URL by destination:
-#   - localhost / 127.0.0.1 (inside cmux) -> browser TAB in cmux
-#   - any other http(s) URL              -> Google Chrome
+#   - localhost / 127.0.0.1 (inside muxy) -> background browser TAB in muxy
+#   - any other http(s) URL               -> Google Chrome
 #   - everything else (files, apps, flags, multiple args) -> real /usr/bin/open
-#
-# Selecting the new tab takes one of two paths:
-#   1. `focus-panel --no-activate` selects it inside its workspace and leaves your
-#      view alone, so a review/question page waits instead of interrupting. A
-#      `notify --surface` badges the tab so a waiting page is still noticeable.
-#   2. Without that flag, the cmux:// deep-link runs `focusTab`, which lands on the
-#      exact tab but switches you to its workspace. (`new-surface --focus true` is
-#      not an option either way: it switches workspace AND reverts to that
-#      workspace's last-selected surface, so the new tab isn't focused at all.)
-#
-# The CLI of the app we're running in. PATH's `cmux` is the cask build, whose
-# flags lag a locally-built app's, so --no-activate would look unsupported.
-cmux_cli() {
-  if [ -n "${CMUX_BUNDLED_CLI_PATH:-}" ] && [ -x "${CMUX_BUNDLED_CLI_PATH}" ]; then
-    printf '%s\n' "$CMUX_BUNDLED_CLI_PATH"
-  else
-    printf '%s\n' cmux
-  fi
-}
 
-# Probing --help rather than trusting an exit code: older cmux ignores unknown
-# flags on focus-panel, so it would "succeed" and rip you away regardless.
-cmux_supports_select_in_place() {
-  "$1" focus-panel --help 2>/dev/null | grep -q -- '--no-activate'
-}
-
-open_in_cmux() {
-  # --id-format uuids prints: OK <surfaceUUID> <paneUUID> <workspaceUUID>
-  local out surf ws cli
-  cli=$(cmux_cli)
-  # Pin the target workspace. Without --workspace, cmux resolves its own default,
-  # which put agent-opened tabs in whatever workspace happened to be selected —
-  # so the tab landed wherever the user was standing, racing their clicks.
+# Open as a muxy browser tab WITHOUT ripping the user there. `browser open` has
+# no background flag and takes focus within the project, so the previously
+# selected tab is restored immediately and the waiting page is badged (bell +
+# amber) to stay noticeable. --project pins the tab to the CALLER's project;
+# untargeted it lands wherever the user happens to be looking.
+#
+# The badge does not self-clear on open: muxy's browser ignores window.close()
+# and offers no unread flag, so the icon stays until the tab is closed.
+open_in_muxy() {
+  command -v muxy >/dev/null 2>&1 || return 1
   local -a target=()
-  [ -n "${CMUX_WORKSPACE_ID:-}" ] && target=(--workspace "$CMUX_WORKSPACE_ID")
-  out=$("$cli" new-surface --type browser --url "$1" --focus false --id-format uuids "${target[@]}" 2>/dev/null)
-  surf=$(printf '%s' "$out" | awk '/^OK/{print $2}')
-  ws=$(printf '%s' "$out" | awk '/^OK/{print $4}')
-  if [ -n "$ws" ] && [ -n "$surf" ]; then
-    if cmux_supports_select_in_place "$cli"; then
-      "$cli" focus-panel --panel "$surf" --workspace "$ws" --no-activate >/dev/null 2>&1
-      # Selected but out of sight, so badge the tab — cmux clears it when opened.
-      # Not on the fallback path below, which already puts the tab in your face.
-      "$cli" notify --surface "$surf" --title "Waiting for you" --body "$1" >/dev/null 2>&1
-      exit 0
-    fi
-    exec /usr/bin/open "cmux://workspace/$ws/surface/$surf"
-  fi
+  [ -n "${MUXY_PROJECT_ID:-}" ] && target=(--project "$MUXY_PROJECT_ID")
+  local prev tab
+  prev=$(muxy list-tabs "${target[@]}" 2>/dev/null | awk -F'\t' '$5=="true"{print $2; exit}')
+  tab=$(muxy browser open "$1" "${target[@]}" 2>/dev/null)
+  [ -n "$tab" ] || return 1
+  [ -n "$prev" ] && [ "$prev" != "$tab" ] && muxy switch-tab "$prev" "${target[@]}" >/dev/null 2>&1
+  muxy tab set-icon "$tab" "bell.badge.fill" >/dev/null 2>&1
+  muxy tab set-color "$tab" amber >/dev/null 2>&1
   exit 0
 }
 
@@ -61,7 +33,7 @@ if [ "$#" -eq 1 ]; then
   case "$1" in
     http://* | https://*)
       if [[ "$1" =~ $localhost_re ]]; then
-        [ -n "$CMUX_SURFACE_ID" ] && open_in_cmux "$1"
+        [ -n "${MUXY_PANE_ID:-}" ] && open_in_muxy "$1"
         exec /usr/bin/open -a "Google Chrome" "$1"
       fi
       exec /usr/bin/open -a "Google Chrome" "$1"

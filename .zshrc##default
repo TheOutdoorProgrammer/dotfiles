@@ -62,6 +62,12 @@ alias k="kubectl"
 alias vim="nvim"
 alias code="j claude teams --dangerously-skip-permissions"
 
+# Muxy's + agent tab has no command setting; it evals MUXY_STARTUP_COMMAND in a
+# login shell AFTER this file runs, so redirect a bare claude into teams here.
+if [[ "$MUXY_STARTUP_COMMAND" == */claude ]]; then
+  MUXY_STARTUP_COMMAND="j claude teams --dangerously-skip-permissions"
+fi
+
 # Personal Stuff
 source ~/functions.sh
 source ~/secrets.sh

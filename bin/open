@@ -20,6 +20,9 @@ open_in_muxy() {
   prev=$(muxy list-tabs "${target[@]}" 2>/dev/null | awk -F'\t' '$5=="true"{print $2; exit}')
   tab=$(muxy browser open "$1" "${target[@]}" 2>/dev/null)
   [ -n "$tab" ] || return 1
+  # Hand the tab id to the caller so it can close the page when it's done with
+  # it; muxy's browser ignores window.close(), so pages can't close themselves.
+  [ -n "${JOEY_OPEN_TAB_FILE:-}" ] && printf '%s\n' "$tab" > "$JOEY_OPEN_TAB_FILE"
   [ -n "$prev" ] && [ "$prev" != "$tab" ] && muxy switch-tab "$prev" "${target[@]}" >/dev/null 2>&1
   muxy tab set-icon "$tab" "bell.badge.fill" >/dev/null 2>&1
   muxy tab set-color "$tab" amber >/dev/null 2>&1

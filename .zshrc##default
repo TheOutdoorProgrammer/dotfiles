@@ -27,7 +27,7 @@ export BREW_PATH=$(brew --prefix)
 
 # GPG and SSH config
 export GPG_TTY="$(tty)"
-export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
+export SSH_AUTH_SOCK="$HOME/.ssh/agent.sock"
 
 # OHMYZSH and POWERLEVEL10K Config
 ZSH_DISABLE_COMPFIX=true

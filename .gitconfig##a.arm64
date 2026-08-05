@@ -1,11 +1,11 @@
 [user]
-	signingkey = 0x1830B516B45606F6
+	signingkey = /Users/joeystout/.ssh/id_piv_auth.pub
     name = TheOutdoorProgrammer
     email = joey@theoutdoorprogrammer.com
 [commit]
     gpgsign = true
 [gpg]
-    program = /opt/homebrew/bin/gpg 
+	format = ssh
 [pull]
     rebase = true
 [rebase]
@@ -73,3 +73,6 @@
 	main-branch = main
 	sync-feature-strategy = rebase
 	sync-perennial-strategy = rebase
+[gpg "ssh"]
+	allowedSignersFile = /Users/joeystout/.ssh/allowed_signers
+	program = /Users/joeystout/projects/src/github.com/TheOutdoorProgrammer/home/scripts/piv-sign.sh

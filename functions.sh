@@ -6,12 +6,29 @@ sourceHome(){
     source ~/.zshrc
 }
 
+# Run a command needing the OpenPGP applet (sops -d, gpg --card-status).
+# scdaemon and the PIV ssh-agent cannot hold the card at once, so hand it over.
+withgpgcard(){
+  local provider rc
+  provider="$(readlink -f /opt/homebrew/lib/libykcs11.dylib)"
+  ssh-add -e "$provider" >/dev/null 2>&1
+  gpgconf --kill scdaemon >/dev/null 2>&1
+  "$@"
+  rc=$?
+  gpgconf --kill scdaemon >/dev/null 2>&1
+  SSH_ASKPASS="$HOME/projects/src/github.com/TheOutdoorProgrammer/home/scripts/piv-pin-askpass.sh" \
+    SSH_ASKPASS_REQUIRE=force ssh-add -s "$provider" </dev/null >/dev/null 2>&1
+  return $rc
+}
+
 # Restart gpg-agent and re-detect the YubiKey (fixes stuck GPG/SSH auth)
 gpgfix(){
-  gpgconf --kill gpg-agent
-  gpgconf --launch gpg-agent
-  gpg-connect-agent updatestartuptty /bye
-  gpg --card-status
+  withgpgcard sh -c '
+    gpgconf --kill gpg-agent
+    gpgconf --launch gpg-agent
+    gpg-connect-agent updatestartuptty /bye
+    gpg --card-status
+  '
 }
 
 # Flush the macOS DNS cache

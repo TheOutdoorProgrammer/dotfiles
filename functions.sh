@@ -9,26 +9,19 @@ sourceHome(){
 # Run a command needing the OpenPGP applet (sops -d, gpg --card-status).
 # scdaemon and the PIV ssh-agent cannot hold the card at once, so hand it over.
 withgpgcard(){
-  local provider rc
-  provider="$(readlink -f /opt/homebrew/lib/libykcs11.dylib)"
-  ssh-add -e "$provider" >/dev/null 2>&1
+  local rc
+  ssh-add -e "$(readlink -f /opt/homebrew/lib/libykcs11.dylib)" >/dev/null 2>&1
   gpgconf --kill scdaemon >/dev/null 2>&1
   "$@"
   rc=$?
-  gpgconf --kill scdaemon >/dev/null 2>&1
-  SSH_ASKPASS="$HOME/projects/src/github.com/TheOutdoorProgrammer/home/scripts/piv-pin-askpass.sh" \
-    SSH_ASKPASS_REQUIRE=force ssh-add -s "$provider" </dev/null >/dev/null 2>&1
+  "$HOME/projects/src/github.com/TheOutdoorProgrammer/home/scripts/piv-reacquire.sh"
   return $rc
 }
 
-# Restart gpg-agent and re-detect the YubiKey (fixes stuck GPG/SSH auth)
-gpgfix(){
-  withgpgcard sh -c '
-    gpgconf --kill gpg-agent
-    gpgconf --launch gpg-agent
-    gpg-connect-agent updatestartuptty /bye
-    gpg --card-status
-  '
+# Take the YubiKey back for SSH after a bare gpg command stole it
+pivfix(){
+  "$HOME/projects/src/github.com/TheOutdoorProgrammer/home/scripts/piv-reacquire.sh" \
+    && ssh-add -l
 }
 
 # Flush the macOS DNS cache

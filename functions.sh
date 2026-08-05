@@ -9,11 +9,14 @@ sourceHome(){
 # Run a command needing the OpenPGP applet (sops -d, gpg --card-status).
 # scdaemon and the PIV ssh-agent cannot hold the card at once, so hand it over.
 withgpgcard(){
-  local rc
+  local rc lock="${TMPDIR:-/tmp}/.piv-gpg-inflight"
+  : > "$lock"
+  trap 'rm -f "$lock"' INT TERM
   ssh-add -e "$(readlink -f /opt/homebrew/lib/libykcs11.dylib)" >/dev/null 2>&1
   gpgconf --kill scdaemon >/dev/null 2>&1
   "$@"
   rc=$?
+  rm -f "$lock"
   "$HOME/projects/src/github.com/TheOutdoorProgrammer/home/scripts/piv-reacquire.sh"
   return $rc
 }

@@ -1,0 +1,73 @@
+# No YubiKey on mini-1 — PIV signing lives in .gitconfig##a.arm64.
+[user]
+    name = TheOutdoorProgrammer
+    email = joey@theoutdoorprogrammer.com
+[commit]
+    gpgsign = false
+[pull]
+    rebase = true
+[rebase]
+  autosquash = true
+[format]
+    pretty = \\%C(yellow)%h %Cred%ad %Cblue%an%Cgreen%d %Creset%s'
+[core]
+    editor = vim
+	excludesFile = ~/.gitignore
+	hooksPath = /Users/joeystout/projects/src/github.com/TheOutdoorProgrammer/home/git-hooks
+[merge]
+	tool = intellij
+[mergetool "intellij"]
+    cmd = /Applications/IntelliJ\\ IDEA.app/Contents/MacOS/idea merge $(cd $(dirname "$LOCAL") && pwd)/$(basename "$LOCAL") $(cd $(dirname "$REMOTE") && pwd)/$(basename "$REMOTE") $(cd $(dirname "$BASE") && pwd)/$(basename "$BASE") $(cd $(dirname "$MERGED") && pwd)/$(basename "$MERGED")
+    trustExitCode = true
+[diff]
+	tool = intellij
+[difftool "intellij"]
+    cmd = /Applications/IntelliJ\\ IDEA.app/Contents/MacOS/idea diff $(cd $(dirname "$LOCAL") && pwd)/$(basename "$LOCAL") $(cd $(dirname "$REMOTE") && pwd)/$(basename "$REMOTE")
+
+[tag]
+	gpgSign = false
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[branch]
+  autosetupmerge = always
+  autosetuprebase = always
+[safe]
+	directory = *
+[alias]
+  fixup = "!git log -n 50 --pretty=format:'%h %s' --no-merges | fzf | cut -c -7 | xargs -o git commit --fixup"
+	yolo = !git commit -am \"`curl -sL http://whatthecommit.com/index.txt`\"
+[url "ssh://git@github.com/"]
+    insteadOf = https://github.com/
+[mergetool "diffview"]
+	cmd = nvim -c \"DiffviewOpen\" \"$MERGED\"
+	trustExitCode = true
+[mergetool]
+	keepBackup = false
+[difftool "diffview"]
+	cmd = nvim -c \"DiffviewOpen\" \"$LOCAL\" \"$REMOTE\"
+[difftool]
+	prompt = false
+[init]
+	defaultBranch = main
+[credential]
+	UseHttpPath = true
+	helper =
+	helper = !aws codecommit credential-helper $@
+[credential "https://git-codecommit.us-east-2.amazonaws.com"]
+	helper = !aws codecommit credential-helper $@
+	UseHttpPath = true
+[credential "https://github.com"]
+	helper =
+	helper = !/opt/homebrew/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper =
+	helper = !/opt/homebrew/bin/gh auth git-credential
+[ghq]
+	root = /Users/joeystout/projects/src
+[git-town]
+	main-branch = main
+	sync-feature-strategy = rebase
+	sync-perennial-strategy = rebase

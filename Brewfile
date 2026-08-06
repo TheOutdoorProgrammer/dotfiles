@@ -13,6 +13,7 @@ brew "bat"
 brew "betterleaks"
 brew "buildpacks/tap/pack"
 brew "cmake"
+brew "docker-buildx" # `docker build` needs it for $BUILDPLATFORM; wire it in via cliPluginsExtraDirs
 brew "duti"
 brew "ekristen/tap/aws-nuke"
 brew "fd"

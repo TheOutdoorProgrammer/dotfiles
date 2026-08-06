@@ -1,0 +1,45 @@
+[rules.comments]
+enabled = true
+severity = "block"
+max_comment_lines = 3
+max_line_length = 80
+
+[rules.lint]
+enabled = true
+
+[rules.mermaid-stream]
+enabled = true
+
+[rules.prose-wrap]
+enabled = true
+flag_em_dashes = true
+
+[rules.secret-scan]
+enabled = true
+
+[rules.secret-redact]
+enabled = true
+
+[rules.bash-output]
+enabled = true
+
+[custom_rules.lovelace-no-inline]
+enabled = true
+startup_cmd = "ollie-custom-rules"
+verb = "Check"
+events = ["PreToolUse"]
+tools = ["mcp__home-assistant__ha_config_set_dashboard_resource"]
+
+[custom_rules.question-use-hoot]
+enabled = true
+startup_cmd = "ollie-custom-rules"
+verb = "Check"
+events = ["PreToolUse"]
+tools = ["AskUserQuestion"]
+
+[custom_rules.teammate-env]
+enabled = true
+startup_cmd = "ollie-custom-rules"
+verb = "Rewrite"
+events = ["PreToolUse"]
+tools = ["Bash"]

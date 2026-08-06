@@ -4,12 +4,15 @@
 setopt LOCAL_OPTIONS NO_MONITOR
 _secrets_tmp=$(mktemp -d)
 _secrets_pids=()
+typeset -A _secrets_labels
 
 # Usage: _fetch <outfile> <command> [args...]
+# stderr is kept (not discarded) so a failure can report why, not just that.
 _fetch() {
   local outfile=$1; shift
-  "$@" > "$_secrets_tmp/$outfile" 2>/dev/null &
+  "$@" > "$_secrets_tmp/$outfile" 2>"$_secrets_tmp/$outfile.err" &
   _secrets_pids+=($!)
+  _secrets_labels[$!]=$outfile
 }
 
 _fetch github_token  joey vault get "GitHub Personal Access Token"
@@ -30,18 +33,35 @@ _fetch spacelift     spacectl profile export-token
 ( sleep 60; kill $_secrets_pids 2>/dev/null ) &
 _secrets_watchdog=$!
 
-# Wait for all secret fetches, track if any failed
-_secrets_ok=true
+# Wait for all secret fetches, recording which ones failed and with what status
+_secrets_failed=()
+typeset -A _secrets_rcs
 for _pid in $_secrets_pids; do
-  wait $_pid 2>/dev/null || _secrets_ok=false
+  wait $_pid 2>/dev/null
+  _rc=$?
+  (( _rc == 0 )) && continue
+  _secrets_failed+=("$_secrets_labels[$_pid]")
+  _secrets_rcs[$_secrets_labels[$_pid]]=$_rc
 done
 
 # Clean up the watchdog
 kill $_secrets_watchdog 2>/dev/null
 wait $_secrets_watchdog 2>/dev/null
 
-if [[ $_secrets_ok == false ]]; then
-  print -P "%F{yellow}⚠ Issue setting secrets (timed out or failed)%f" >&2
+if (( $#_secrets_failed )); then
+  print -P "%F{yellow}⚠ ${#_secrets_failed} of ${#_secrets_pids} secrets failed%f" >&2
+  for _f in $_secrets_failed; do
+    # A watchdog SIGTERM surfaces as 143; anything else is the tool's own failure.
+    if (( _secrets_rcs[$_f] == 143 )); then
+      _why="timed out after 60s"
+    else
+      _why="exit ${_secrets_rcs[$_f]}"
+      _lines=()
+      [[ -s "$_secrets_tmp/$_f.err" ]] && _lines=(${(f)"$(<"$_secrets_tmp/$_f.err")"})
+      (( $#_lines )) && _why="${_lines[-1]}"
+    fi
+    print -P "%F{yellow}    ${_f}: ${_why}%f" >&2
+  done
 fi
 
 export GITHUB_TOKEN=$(<"$_secrets_tmp/github_token")
@@ -93,4 +113,5 @@ if [[ -n "$GITHUB_TOKEN" && -d "$HOME/.claude" ]]; then
 fi
 
 rm -rf "$_secrets_tmp"
-unset _secrets_tmp
+unset _secrets_tmp _secrets_pids _secrets_labels _secrets_failed _secrets_rcs \
+      _secrets_watchdog _pid _rc _f _why _lines

@@ -110,6 +110,10 @@ export PATH="/Users/joeystout/.rd/bin:$PATH"
 ### MANAGED BY RANCHER DESKTOP END (DO NOT EDIT)
 export PATH="$HOME/.local/bin:$PATH"
 
+# Dev overrides shadow everything: temporarily drop a build into ~/dev to test
+# it, delete it to fall back to the installed one. Keep this the FIRST entry.
+export PATH="$HOME/dev:$PATH"
+
 # Capture the fully-built interactive PATH for team agents, read by the
 # ollie-hooks teammate-env rule when a teammate launches without it. Inert under
 # muxy, which gives teammates a login shell. Must be the LAST PATH line here.

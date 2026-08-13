@@ -19,10 +19,6 @@ spoon.AppLauncher:bindHotkeys({
 spoon.SpoonInstall:andUse("Emojis")
 spoon.Emojis:bindHotkeys({toggle = {hyper, "e"}})
 
--- Mic Mute
-spoon.SpoonInstall:andUse("MicMute")
-spoon.MicMute:bindHotkeys({toggle = {hyper, "m"}}, 1)
-
 -- Window Manager
 spoon.SpoonInstall:andUse("MiroWindowsManager")
 hs.window.animationDuration = 0.3

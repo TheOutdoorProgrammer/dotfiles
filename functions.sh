@@ -27,6 +27,13 @@ pivfix() {
     ssh-add -l
 }
 
+# Re-pin the ProFX stereo pair to 3/4 after macOS resets it to the dead 1/2
+fixProFX() {
+  set-stereo-pair ProFX 3 4 || return $?
+  pgrep -x FineTune >/dev/null &&
+    echo "re-route the app in FineTune so it rebuilds the tap on 3/4"
+}
+
 # Flush the macOS DNS cache
 killDNS() {
   sudo dscacheutil -flushcache

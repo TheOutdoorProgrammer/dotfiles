@@ -10,6 +10,7 @@ tap "spacelift-io/spacelift"
 tap "theoutdoorprogrammer/tap"
 
 brew "ansible"
+brew "aubio"       # beat detection for song-of-the-week hook snapping
 brew "bat"
 brew "betterleaks"
 brew "buildpacks/tap/pack"
@@ -18,6 +19,7 @@ brew "docker-buildx" # `docker build` needs it for $BUILDPLATFORM; wire it in vi
 brew "duti"
 brew "ekristen/tap/aws-nuke"
 brew "fd"
+brew "ffmpeg"      # cutting, levelling and crossfading audio
 brew "fswatch"
 brew "fzf"
 brew "gawk"
@@ -72,6 +74,7 @@ brew "yamllint"
 brew "yarn"
 brew "ykman"
 brew "ykpers"
+brew "yt-dlp"      # pulls source audio for the song-of-the-week megamix
 brew "ytt"
 brew "yubico-piv-tool"
 brew "yubikey-personalization"

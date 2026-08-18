@@ -26,6 +26,7 @@ _fetch slack         joey vault get "SLACK_WORKSPACE_URL"
 _fetch gemini        joey vault get "GEMINI_API_KEY"
 _fetch airtrail      joey vault get "AirTrail API Key"
 _fetch dusk_mcp      joey vault get "Dusk DUSK_MCP_TOKEN"
+_fetch fledge        joey vault get "fledge upload token"
 #_fetch litellm       joey vault get "LiteLLM API Key"
 #_fetch litellm_work  joey vault get "LiteLLM Work API Key"
 _fetch spacelift     spacectl profile export-token
@@ -78,6 +79,8 @@ export SLACK_WORKSPACE_URL=$(<"$_secrets_tmp/slack")
 export GEMINI_API_KEY=$(<"$_secrets_tmp/gemini")
 export AIRTRAIL_API_KEY=$(<"$_secrets_tmp/airtrail")
 export DUSK_MCP_TOKEN=$(<"$_secrets_tmp/dusk_mcp")
+export FLEDGE_URL=https://fledge.theoutdoorprogrammer.com
+export FLEDGE_TOKEN=$(<"$_secrets_tmp/fledge")
 #export LITELLM_API_KEY=$(<"$_secrets_tmp/litellm")
 #export LITELLM_WORK_API_KEY=$(<"$_secrets_tmp/litellm_work")
 

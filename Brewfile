@@ -13,11 +13,13 @@ brew "ansible"
 brew "aubio"       # beat detection for song-of-the-week hook snapping
 brew "bat"
 brew "betterleaks"
+brew "buf"
 brew "buildpacks/tap/pack"
 brew "cmake"
 brew "docker-buildx" # `docker build` needs it for $BUILDPLATFORM; wire it in via cliPluginsExtraDirs
 brew "duti"
 brew "ekristen/tap/aws-nuke"
+brew "exiftool"
 brew "fd"
 brew "ffmpeg"      # cutting, levelling and crossfading audio
 brew "fswatch"

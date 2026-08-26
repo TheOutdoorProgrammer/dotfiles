@@ -5,15 +5,10 @@
 -- Absolute line numbers only (LazyVim defaults to hybrid relative numbers).
 vim.opt.relativenumber = false
 
--- Put mise's shims dir on nvim's PATH so spawned LSPs/tools (tofu-ls -> `tofu`,
--- `tofu fmt`, etc.) resolve mise-managed binaries. The interactive shell uses
--- mise's shim-free PATH activation, but nvim can't run that hook — so shims are
--- mise's own recommended path for editors/IDEs, and this is the one place we use
--- them (dynamic: each shim resolves the version from the nearest .tool-versions).
--- NOTE: Go is deliberately NOT in mise — it's a brew formula, so there's no `go`
--- shim here and gopls falls through to brew's `go` (GOTOOLCHAIN=auto handles
--- per-project versions). Keep it that way; a managed `go` shim shadows brew and
--- breaks gopls.
+-- nvim can't run mise's shell activation hook, so spawned LSPs/tools find
+-- mise-managed binaries through the shims instead (mise's editor-recommended path).
+-- A shim with no version resolvable from cwd exits 1: for `go` that kills gopls
+-- ("no views"), so keep a global default (`mise use -g go@<ver>`) for unpinned repos.
 vim.env.PATH = vim.fn.expand("~/.local/share/mise/shims") .. ":" .. vim.env.PATH
 
 -- Silence "watch.watch: ENOENT" spam from gopls. On macOS Neovim hardwires the

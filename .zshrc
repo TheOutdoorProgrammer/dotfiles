@@ -61,6 +61,10 @@ alias sublime="subl"
 alias k="kubectl"
 alias vim="nvim"
 
+# OrbStack's own init line (PATH for its CLI and machines); it exits quietly on
+# the Macs that do not run OrbStack.
+source ~/.orbstack/shell/init.zsh 2>/dev/null || :
+
 # Personal Stuff
 source ~/functions.sh
 source ~/secrets.sh

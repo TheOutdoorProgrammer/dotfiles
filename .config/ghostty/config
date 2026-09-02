@@ -3,13 +3,14 @@ font-family = FiraMono Nerd Font Mono
 cursor-style = underline
 link-url = true
 
-# Every Ghostty window is a Herdr client on the default session, so the terminal
-# IS the multiplexer. Plain shell when Herdr is broken:
+# The first Ghostty surface is a Herdr client on the default session. New tabs
+# use the default shell. Plain shell when Herdr is broken:
 #   open -na Ghostty --args --command=/bin/zsh
-command = /opt/homebrew/bin/herdr
+initial-command = /opt/homebrew/bin/herdr
 
-# Herdr owns tabs, splits and pane focus, so these send its ctrl+b prefix chords
-# (\x02 is ctrl+b) instead of Ghostty's own tab and split actions.
+# Herdr owns its tabs, splits and pane focus, so these send its ctrl+b prefix
+# chords (\x02 is ctrl+b). Cmd+G creates a separate Ghostty shell tab.
+keybind = cmd+g=new_tab
 keybind = cmd+t=text:\x02c
 keybind = cmd+backslash=text:\x02v
 keybind = cmd+shift+backslash=text:\x02v

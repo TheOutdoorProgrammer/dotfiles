@@ -27,9 +27,9 @@ _fetch gemini        joey vault get "GEMINI_API_KEY"
 _fetch airtrail      joey vault get "AirTrail API Key"
 _fetch dusk_mcp      joey vault get "Dusk DUSK_MCP_TOKEN"
 _fetch fledge        joey vault get "fledge upload token"
+_fetch posthog       joey vault get "PostHog personal API key"
 #_fetch litellm       joey vault get "LiteLLM API Key"
 #_fetch litellm_work  joey vault get "LiteLLM Work API Key"
-_fetch spacelift     spacectl profile export-token
 
 # Watchdog: kill any stragglers after 60s
 ( sleep 60; kill $_secrets_pids 2>/dev/null ) &
@@ -74,13 +74,13 @@ export CLOUDFLARE_API_TOKEN=$(<"$_secrets_tmp/cloudflare")
 export SMITHERY_API_KEY=$(<"$_secrets_tmp/smithery")
 export PERPLEXITY_API_KEY=$(<"$_secrets_tmp/perplexity")
 export OBSIDIAN_API_KEY=$(<"$_secrets_tmp/obsidian")
-export SPACELIFT_API_TOKEN=$(<"$_secrets_tmp/spacelift")
 export SLACK_WORKSPACE_URL=$(<"$_secrets_tmp/slack")
 export GEMINI_API_KEY=$(<"$_secrets_tmp/gemini")
 export AIRTRAIL_API_KEY=$(<"$_secrets_tmp/airtrail")
 export DUSK_MCP_TOKEN=$(<"$_secrets_tmp/dusk_mcp")
 export FLEDGE_URL=https://fledge.theoutdoorprogrammer.com
 export FLEDGE_TOKEN=$(<"$_secrets_tmp/fledge")
+export POSTHOG_API_KEY=$(<"$_secrets_tmp/posthog")
 #export LITELLM_API_KEY=$(<"$_secrets_tmp/litellm")
 #export LITELLM_WORK_API_KEY=$(<"$_secrets_tmp/litellm_work")
 

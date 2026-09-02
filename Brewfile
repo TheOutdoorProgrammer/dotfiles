@@ -53,7 +53,6 @@ brew "mise"
 brew "neovim"
 brew "languagetool"
 brew "opa"
-brew "openssh"
 brew "pinentry-mac"
 brew "podman"
 brew "protobuf"
@@ -92,6 +91,7 @@ brew "norwoodj/tap/helm-docs"
 
 cask "arc"
 cask "alfred"
+cask "claude-code@latest" # Claude Code CLI, `claude`
 cask "codex"      # OpenAI Codex CLI, `codex`, signs in with the ChatGPT plan
 cask "cursor-cli" # Cursor's terminal agent, `cursor-agent`, shares the Cursor subscription
 cask "discord"

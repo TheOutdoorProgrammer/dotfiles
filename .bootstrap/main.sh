@@ -31,12 +31,16 @@ step "git identity: YubiKey when present, the vault's agent key otherwise"
 ensure_agent_identity
 
 step "Homebrew bundle (~/Brewfile is the tool list for every host)"
-# One untrusted tap makes `brew bundle` refuse the whole batch with a wall of
-# reasonless "has failed!" lines, so every tap the Brewfile names is trusted
-# first; listing it there is the trust decision.
-while read -r tap; do
+# One untrusted tap, even one the Brewfile never names, makes `brew bundle`
+# refuse the whole batch with reasonless "has failed!" lines; trust the
+# Brewfile's taps (tap lines and owner/tap/name entries) and every local tap.
+{
+  sed -n 's/^tap "\([^"]*\)".*/\1/p' "$HOME/Brewfile"
+  sed -n 's/^\(brew\|cask\) "\([^"/]*\/[^"/]*\)\/[^"]*".*/\2/p' "$HOME/Brewfile"
+  brew tap
+} | sort -u | while read -r tap; do
   brew trust "$tap" >/dev/null 2>&1 || true
-done < <(sed -n 's/^tap "\([^"]*\)".*/\1/p' "$HOME/Brewfile")
+done
 brew bundle install --file="$HOME/Brewfile" --no-upgrade ||
   echo "some Brewfile entries did not install; casks with installers and Mac App Store apps need a console session, rerun \`brew bundle\` there"
 

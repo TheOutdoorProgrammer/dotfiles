@@ -1,0 +1,6 @@
+# Herdr defaults are fine except one: pop-up notifications ship off, which
+# makes `herdr notification show` (hoot's "waiting on Joey" alert, agents
+# finishing in background workspaces) a silent no-op. Everything else stays at
+# `herdr --default-config`.
+[ui.toast]
+delivery = "system"

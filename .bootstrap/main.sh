@@ -98,7 +98,11 @@ done
 
 step "Claude Code MCP servers from ~/.claude/mcp-servers.json"
 MCP_CONFIG="$HOME/.claude/mcp-servers.json"
-if [ -f "$MCP_CONFIG" ] && command -v claude >/dev/null 2>&1; then
+# An unauthenticated `claude mcp …` blocks forever instead of failing, and
+# sign-in is interactive, so a fresh Mac defers this until `claude` has run.
+if [ ! -f "$HOME/.claude/.credentials.json" ]; then
+  echo "skip: Claude Code is not signed in here; run \`claude\` at the console once, then rerun yadm bootstrap for the MCP servers"
+elif [ -f "$MCP_CONFIG" ] && command -v claude >/dev/null 2>&1; then
   for server in $(jq -r 'keys[]' "$MCP_CONFIG"); do
     claude mcp get "$server" >/dev/null 2>&1 && continue
     claude mcp add-json "$server" "$(jq -c ".\"$server\"" "$MCP_CONFIG")" -s user && echo "mcp: $server"

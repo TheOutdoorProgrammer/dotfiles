@@ -1,10 +1,25 @@
 theme = Dracula
 font-family = FiraMono Nerd Font Mono
+cursor-style = underline
+link-url = true
 
 # Every Ghostty window is a Herdr client on the default session, so the terminal
 # IS the multiplexer. Plain shell when Herdr is broken:
 #   open -na Ghostty --args --command=/bin/zsh
 command = /opt/homebrew/bin/herdr
+
+# Herdr owns tabs, splits and pane focus, so these send its ctrl+b prefix chords
+# (\x02 is ctrl+b) instead of Ghostty's own tab and split actions.
+keybind = cmd+t=text:\x02c
+keybind = cmd+backslash=text:\x02v
+keybind = cmd+shift+backslash=text:\x02v
+keybind = cmd+minus=text:\x02-
+keybind = cmd+shift+left=text:\x02h
+keybind = cmd+shift+down=text:\x02j
+keybind = cmd+shift+up=text:\x02k
+keybind = cmd+shift+right=text:\x02l
+keybind = cmd+left=esc:b
+keybind = cmd+right=esc:f
 
 # 512MB per surface, up from the 10MB default. Ghostty budgets scrollback in
 # BYTES, not lines, so a wide window burns it fast. Pages are allocated lazily,

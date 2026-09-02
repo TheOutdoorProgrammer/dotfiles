@@ -41,8 +41,16 @@ step "Homebrew bundle (~/Brewfile is the tool list for every host)"
 } | sort -u | while read -r tap; do
   brew trust "$tap" >/dev/null 2>&1 || true
 done
-brew bundle install --file="$HOME/Brewfile" --no-upgrade ||
-  echo "some Brewfile entries did not install; casks with installers and Mac App Store apps need a console session, rerun \`brew bundle\` there"
+# The bundle's cask downloads once filled mini-1 to 97 percent and stopped the
+# K3s VM; refuse to start it without headroom.
+free_gb=$(df -g / | awk 'NR == 2 { print $4 }')
+if [ "${free_gb:-0}" -lt 25 ]; then
+  echo "only ${free_gb} GB free on /: skipping brew bundle until there is 25 GB (brew cleanup -s --prune=all, go clean -cache)"
+else
+  brew bundle install --file="$HOME/Brewfile" --no-upgrade ||
+    echo "some Brewfile entries did not install; casks with installers and Mac App Store apps need a console session, rerun \`brew bundle\` there"
+  brew cleanup -s --prune=all >/dev/null 2>&1
+fi
 
 step "GitHub CLI"
 if gh auth status >/dev/null 2>&1; then

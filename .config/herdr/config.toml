@@ -1,6 +1,20 @@
+onboarding = false
 # Herdr defaults are fine except one: pop-up notifications ship off, which
 # makes `herdr notification show` (hoot's "waiting on Joey" alert, agents
 # finishing in background workspaces) a silent no-op. Everything else stays at
 # `herdr --default-config`.
 [ui.toast]
 delivery = "system"
+
+[[keys.command]]
+key = "prefix+a"
+type = "plugin_action"
+command = "cdragon.command-center.open"
+description = "Open Command Center"
+
+[ui]
+show_agent_labels_on_pane_borders = true
+
+[theme]
+name = "dracula"
+auto_switch = false

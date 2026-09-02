@@ -27,7 +27,8 @@ ensure_agent_identity() {
       tmp=$(mktemp "$ssh_dir/.id_agent.XXXXXX") || return 1
       if vault_get "Agent SSH key" >"$tmp" && [ -s "$tmp" ]; then
         chmod 600 "$tmp" && mv -f "$tmp" "$ssh_dir/id_agent"
-        vault_get "Agent SSH key (public)" >"$ssh_dir/id_agent.pub" && chmod 644 "$ssh_dir/id_agent.pub"
+        vault_get "Agent SSH key (public)" >"$ssh_dir/id_agent.pub"
+        chmod 644 "$ssh_dir/id_agent.pub"
         echo "installed ~/.ssh/id_agent from the vault"
       else
         rm -f "$tmp"

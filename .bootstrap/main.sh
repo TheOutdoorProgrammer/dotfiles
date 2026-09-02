@@ -9,10 +9,11 @@ HOME_REPO="$HOME/projects/src/github.com/TheOutdoorProgrammer/home"
 
 step() { printf '\n== %s\n' "$*"; }
 
-step "Homebrew bundle (~/Brewfile is the tool list for every host)"
+step "Homebrew, jq and the 1Password CLI (everything else waits for the git identity)"
 command -v brew >/dev/null 2>&1 ||
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-brew bundle install --file="$HOME/Brewfile" --no-upgrade
+command -v jq >/dev/null 2>&1 || brew install jq
+command -v op >/dev/null 2>&1 || brew install --cask 1password/tap/1password-cli
 
 step "1Password service account"
 if [ ! -s "$HOME/OP.sh" ]; then
@@ -22,12 +23,29 @@ if [ ! -s "$HOME/OP.sh" ]; then
   exit 1
 fi
 . "$HOME/OP.sh"
-
-step "GitHub CLI"
-gh auth status >/dev/null 2>&1 || vault_get "GitHub Personal Access Token" | gh auth login --with-token
+echo "ok: ~/OP.sh present"
 
 step "git identity: YubiKey when present, the vault's agent key otherwise"
+# Before the bundle: the tracked ssh config routes every git@github.com clone
+# (taps included) through this identity.
 ensure_agent_identity
+
+step "Homebrew bundle (~/Brewfile is the tool list for every host)"
+# One untrusted tap makes `brew bundle` refuse the whole batch with a wall of
+# reasonless "has failed!" lines, so every tap the Brewfile names is trusted
+# first; listing it there is the trust decision.
+while read -r tap; do
+  brew trust "$tap" >/dev/null 2>&1 || true
+done < <(sed -n 's/^tap "\([^"]*\)".*/\1/p' "$HOME/Brewfile")
+brew bundle install --file="$HOME/Brewfile" --no-upgrade ||
+  echo "some Brewfile entries did not install; casks with installers and Mac App Store apps need a console session, rerun \`brew bundle\` there"
+
+step "GitHub CLI"
+if gh auth status >/dev/null 2>&1; then
+  echo "ok: gh already authenticated"
+else
+  vault_get "GitHub Personal Access Token" | gh auth login --with-token
+fi
 
 step "oh-my-zsh and zsh-completions"
 [ -d "$HOME/.oh-my-zsh" ] ||

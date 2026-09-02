@@ -5,7 +5,6 @@ tap "fluxcd/tap"
 tap "jwbargsten/misc"
 tap "norwoodj/tap"
 tap "romkatv/powerlevel10k"
-tap "spacelift-io/spacelift"
 tap "theoutdoorprogrammer/tap"
 
 brew "ansible"

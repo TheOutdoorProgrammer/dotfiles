@@ -51,6 +51,22 @@ j() {
   esac
 }
 
+# claude, codex and cursor-agent run in their permissive modes by default
+# (teams for Claude); subcommands like `codex login` pass through untouched,
+# and `<tool> --escape …` reaches the real binary, same as `git --escape`.
+claude() {
+  [[ "$1" == --escape ]] && { shift; command claude "$@"; return; }
+  j claude teams --dangerously-skip-permissions "$@"
+}
+codex() {
+  [[ "$1" == --escape ]] && { shift; command codex "$@"; return; }
+  j codex yolo "$@"
+}
+cursor-agent() {
+  [[ "$1" == --escape ]] && { shift; command cursor-agent "$@"; return; }
+  j cursor yolo "$@"
+}
+
 # Pick a coding agent (claude, cursor, codex) and launch it here in permissive
 # mode, as `code` always did for Claude. `code <agent> [args]` skips the picker.
 code() {

@@ -1,6 +1,6 @@
 # herdr-goto: Ctrl+G fuzzy-picks a ghq repo and opens it as a Herdr workspace
-# running an agent team. Repeating it adds a session, never reuses one. Thin on
-# purpose: `joey claude goto` owns the workspace/tab/pane resolution.
+# running an agent team; ctrl-w in the picker uses a fresh worktree instead.
+# Thin on purpose: `joey claude goto` owns the workspace/tab/pane resolution.
 
 herdr-goto() {
   command -v ghq   >/dev/null 2>&1 || { print -u2 "herdr-goto: ghq not installed";   return 1 }
@@ -8,13 +8,24 @@ herdr-goto() {
   command -v herdr >/dev/null 2>&1 || { print -u2 "herdr-goto: herdr not installed"; return 1 }
   [[ "${HERDR_ENV:-}" == 1 ]]     || { print -u2 "herdr-goto: run it inside a Herdr pane (start \`herdr\` first)"; return 1 }
 
-  local root repo
+  local root out key repo branch
   root=$(ghq root)
-  repo=$(ghq list | fzf \
+  out=$(ghq list | fzf \
     --prompt='go to > ' --height=70% --reverse --border \
+    --header='enter: open   ctrl-w: open in a new worktree' \
+    --expect=ctrl-w \
     --preview "f=\"$root/{}/README.md\"; if [ -f \"\$f\" ]; then command -v bat >/dev/null 2>&1 && bat --color=always --style=plain \"\$f\" || cat \"\$f\"; else ls -la \"$root/{}\"; fi") || return
+  key=${out%%$'\n'*}
+  repo=${out#*$'\n'}
   [[ -z "$repo" ]] && return
-  joey claude goto "$root/$repo"
+  if [[ "$key" == ctrl-w ]]; then
+    branch=""
+    vared -p "branch for the worktree: " branch
+    [[ -z "$branch" ]] && return
+    joey claude goto --worktree "$branch" "$root/$repo"
+  else
+    joey claude goto "$root/$repo"
+  fi
 }
 
 # Bind to Ctrl+G (overrides zsh's default ^G list-expand). Guarded so a

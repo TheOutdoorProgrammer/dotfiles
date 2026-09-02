@@ -62,16 +62,10 @@ alias k="kubectl"
 alias vim="nvim"
 alias code="j claude teams --dangerously-skip-permissions"
 
-# Muxy's + agent tab has no command setting; it evals MUXY_STARTUP_COMMAND in a
-# login shell AFTER this file runs, so redirect a bare claude into teams here.
-if [[ "$MUXY_STARTUP_COMMAND" == */claude ]]; then
-  MUXY_STARTUP_COMMAND="j claude teams --dangerously-skip-permissions"
-fi
-
 # Personal Stuff
 source ~/functions.sh
 source ~/secrets.sh
-source ~/.config/zsh/muxy-goto.zsh
+source ~/.config/zsh/herdr-goto.zsh
 export AWS_PAGER=""
 export GOPATH=~/projects
 # Go manages its own toolchain (brew installs one real `go`; each project's
@@ -116,5 +110,5 @@ export PATH="$HOME/dev:$PATH"
 
 # Capture the fully-built interactive PATH for team agents, read by the
 # ollie-hooks teammate-env rule when a teammate launches without it. Inert under
-# muxy, which gives teammates a login shell. Must be the LAST PATH line here.
+# Herdr, whose panes are login shells. Must be the LAST PATH line here.
 print -r -- "$PATH" > "$HOME/.claude/teammate-path"

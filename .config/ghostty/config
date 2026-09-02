@@ -1,8 +1,10 @@
-# Standalone Ghostty.app reads this file; Muxy's embedded libghostty reads
-# ~/Library/Application Support/Muxy/ghostty.conf instead. Keep scrollback-limit
-# in sync between them.
 theme = Dracula
 font-family = FiraMono Nerd Font Mono
+
+# Every Ghostty window is a Herdr client on the default session, so the terminal
+# IS the multiplexer. Plain shell when Herdr is broken:
+#   open -na Ghostty --args --command=/bin/zsh
+command = /opt/homebrew/bin/herdr
 
 # 512MB per surface, up from the 10MB default. Ghostty budgets scrollback in
 # BYTES, not lines, so a wide window burns it fast. Pages are allocated lazily,

@@ -51,9 +51,9 @@ j() {
   esac
 }
 
-# claude, codex and cursor-agent run in their permissive modes by default
-# (teams for Claude); subcommands like `codex login` pass through untouched,
-# and `<tool> --escape …` reaches the real binary, same as `git --escape`.
+# claude, codex and cursor run their agents permissive by default (teams for
+# Claude); subcommands like `codex login` pass through, and `<tool> --escape …`
+# is the raw binary, same as `git --escape`: `cursor --escape .` opens the IDE.
 claude() {
   [[ "$1" == --escape ]] && { shift; command claude "$@"; return; }
   j claude teams --dangerously-skip-permissions "$@"
@@ -61,6 +61,10 @@ claude() {
 codex() {
   [[ "$1" == --escape ]] && { shift; command codex "$@"; return; }
   j codex yolo "$@"
+}
+cursor() {
+  [[ "$1" == --escape ]] && { shift; command cursor "$@"; return; }
+  j cursor yolo "$@"
 }
 cursor-agent() {
   [[ "$1" == --escape ]] && { shift; command cursor-agent "$@"; return; }

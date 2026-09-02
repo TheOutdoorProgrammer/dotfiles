@@ -43,9 +43,6 @@ mise reshim
 step "npm globals"
 npm install --global expo-cli commitizen cz-customizable >/dev/null
 
-step "easy-k8s-secrets"
-[ -d "$HOME/easy-k8s-secrets" ] || git clone -q https://github.com/Apollorion/easy-k8s-secrets.git "$HOME/easy-k8s-secrets"
-
 step "default apps and macOS defaults"
 for ext in md txt yaml yml sh js config json html css ts tsx jsx rb py go; do
   duti -s com.sublimetext.4 ".$ext" all 2>/dev/null
@@ -71,6 +68,10 @@ else
 fi
 
 step "repo Go CLIs (joey, hoot, boards, custom-ollie-rules)"
+# Homebrew's go defaults GOTOOLCHAIN=local, so a go.work toolchain bump fails
+# `go vet` from any non-login shell (this one, hooks, gopls). Persist auto.
+go env -w GOTOOLCHAIN=auto
+export GOTOOLCHAIN=auto
 for dir in "$HOME_REPO"/*/; do
   if [ -f "$dir/Makefile" ] && [ -f "$dir/go.mod" ]; then
     make -C "$dir" install || echo "install failed for $dir"

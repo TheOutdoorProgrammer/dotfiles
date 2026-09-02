@@ -63,7 +63,7 @@ brew "ruff"
 brew "selene"
 brew "shellcheck"
 brew "sops"
-brew "spacelift-io/spacelift/spacectl"
+brew "spacectl"     # moved from the spacelift-io tap into homebrew-core
 brew "swiftlint"
 brew "telnet"
 brew "terraform-docs"

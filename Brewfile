@@ -92,6 +92,8 @@ brew "norwoodj/tap/helm-docs"
 
 cask "arc"
 cask "alfred"
+cask "codex"      # OpenAI Codex CLI, `codex`, signs in with the ChatGPT plan
+cask "cursor-cli" # Cursor's terminal agent, `cursor-agent`, shares the Cursor subscription
 cask "discord"
 cask "docker"
 cask "drawio"

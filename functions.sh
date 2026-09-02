@@ -51,6 +51,31 @@ j() {
   esac
 }
 
+# Pick a coding agent (claude, cursor, codex) and launch it here in permissive
+# mode, as `code` always did for Claude. `code <agent> [args]` skips the picker.
+code() {
+  local agent=$1
+  if [[ -n "$agent" ]]; then
+    shift
+  elif command -v fzf >/dev/null 2>&1; then
+    agent=$(printf '%s\n' \
+      $'claude\tClaude Code, teammates as Herdr tabs' \
+      $'cursor\tCursor agent' \
+      $'codex\tOpenAI Codex' \
+      | fzf --height=~8 --reverse --prompt='agent > ' --delimiter=$'\t' --with-nth=1,2 | cut -f1) || return
+  else
+    local choice
+    select choice in claude cursor codex; do agent=$choice; break; done
+  fi
+  [[ -z "$agent" ]] && return
+  case "$agent" in
+  claude) j claude teams --dangerously-skip-permissions "$@" ;;
+  cursor) j cursor yolo "$@" ;;
+  codex) j codex yolo "$@" ;;
+  *) print -u2 "code: unknown agent '$agent' (claude, cursor, codex)"; return 1 ;;
+  esac
+}
+
 # joey zsh completion (no-op until compinit has run)
 if command -v joey >/dev/null 2>&1; then
   source <(joey completion zsh) 2>/dev/null

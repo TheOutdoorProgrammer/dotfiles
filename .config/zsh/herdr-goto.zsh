@@ -1,5 +1,5 @@
-# herdr-goto: Ctrl+G fuzzy-picks a ghq repo and opens it as a Herdr workspace
-# running an agent team; ctrl-w in the picker uses a fresh worktree instead.
+# herdr-goto: Ctrl+G fuzzy-picks a ghq repo, then an agent, and opens the repo
+# as a Herdr workspace running it; ctrl-w in the repo picker uses a worktree.
 # Thin on purpose: `joey claude goto` owns the workspace/tab/pane resolution.
 
 herdr-goto() {
@@ -8,7 +8,7 @@ herdr-goto() {
   command -v herdr >/dev/null 2>&1 || { print -u2 "herdr-goto: herdr not installed"; return 1 }
   [[ "${HERDR_ENV:-}" == 1 ]]     || { print -u2 "herdr-goto: run it inside a Herdr pane (start \`herdr\` first)"; return 1 }
 
-  local root out key repo branch
+  local root out key repo branch agent
   root=$(ghq root)
   out=$(ghq list | fzf \
     --prompt='go to > ' --height=70% --reverse --border \
@@ -22,9 +22,19 @@ herdr-goto() {
     branch=""
     vared -p "branch for the worktree: " branch
     [[ -z "$branch" ]] && return
-    joey claude goto --worktree "$branch" "$root/$repo"
+  fi
+
+  agent=$(printf '%s\n' \
+    $'claude\tClaude Code, teammates as Herdr tabs' \
+    $'cursor\tCursor agent' \
+    $'codex\tOpenAI Codex' \
+    | fzf --prompt='agent > ' --height=~8 --reverse --border --delimiter=$'\t' --with-nth=1,2 | cut -f1) || return
+  [[ -z "$agent" ]] && return
+
+  if [[ -n "$branch" ]]; then
+    joey claude goto --worktree "$branch" --agent "$agent" "$root/$repo"
   else
-    joey claude goto "$root/$repo"
+    joey claude goto --agent "$agent" "$root/$repo"
   fi
 }
 

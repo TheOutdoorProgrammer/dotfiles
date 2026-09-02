@@ -1,129 +1,129 @@
 #!/bin/bash
-
-# Install brew stuff
-cd ~
-brew bundle install
-cd -
-
-# Install OHMYZSH
-sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-
-# Install Easy K8s Secrets
-cd ~
-git clone https://github.com/Apollorion/easy-k8s-secrets.git
-cd -
-
-# Set default applications for file types
-duti -s com.sublimetext.4 .md all
-duti -s com.sublimetext.4 .txt all
-duti -s com.sublimetext.4 .yaml all
-duti -s com.sublimetext.4 .yml all
-duti -s com.sublimetext.4 .sh all
-duti -s com.sublimetext.4 .js all
-duti -s com.sublimetext.4 .config all
-duti -s com.sublimetext.4 .json all
-duti -s com.sublimetext.4 .html all
-duti -s com.sublimetext.4 .css all
-duti -s com.sublimetext.4 .ts all
-duti -s com.sublimetext.4 .tsx all
-duti -s com.sublimetext.4 .jsx all
-duti -s com.sublimetext.4 .rb all
-duti -s com.sublimetext.4 .py all
-duti -s com.sublimetext.4 .go all
-
-# Install runtime versions via mise (brew formula; activated in .zshrc).
-# Tools + versions live in ~/.tool-versions (yadm-tracked), all pinned `latest`.
-# NOTE: Go is intentionally NOT managed by mise — it's a brew formula (see
-# Brewfile) and self-manages versions via GOTOOLCHAIN=auto per project. A managed
-# go shim shadowed brew on nvim's PATH and broke gopls. See the home repo's
-# docs/dev-environment.md.
-mise settings set auto_install true   # auto-install a project's pinned version on cd
-mise install                          # install latest of every tool in ~/.tool-versions
-mise reshim                           # shims for nvim (~/.local/share/mise/shims)
-
-npm install --global expo-cli commitizen cz-customizable
-
-# OSX defaults
-defaults -currentHost write com.apple.dock tilesize -float 36 # Sets dock size
-defaults -currentHost write com.apple.dock show-recents -bool false # Disable recents in the dock
-defaults -currentHost write com.apple.AppleMultitouchTrackpad TrackpadCornerSecondaryClick -int 2 # Right click with bottom right corner of trackpad
-defaults -currentHost write -g com.apple.swipescrolldirection -bool false # Disable natural scroll direction
-defaults -currentHost write -g com.apple.mouse.scaling -float "3.0" # Speed up the mouse
-
-# GPG Things
-#launchctl load gnupg.gpg-agent.plist
-#launchctl load gnupg.gpg-agent-symlink.plist
-
-# Install help command
-gh extension install github/gh-copilot
-
-# Install Slack CLI
-curl -fsSL https://raw.githubusercontent.com/stablyai/agent-slack/main/install.sh | sh
-
-# Claude Code MCP servers
-MCP_CONFIG="$HOME/.claude/mcp-servers.json"
-if [ -f "$MCP_CONFIG" ] && command -v claude &>/dev/null; then
-  echo "Installing Claude Code MCP servers..."
-  for server in $(jq -r 'keys[]' "$MCP_CONFIG"); do
-    config=$(jq -c ".\"$server\"" "$MCP_CONFIG")
-    claude mcp add-json "$server" "$config" -s user
-  done
-  echo "Claude Code MCP servers installed."
-elif [ -f "$MCP_CONFIG" ]; then
-  echo "SKIP: claude CLI not found — install Claude Code, then re-run bootstrap for MCP servers."
-fi
-
-# Home repo (infra docs, skills, commands, ollie-hooks) — the skills wiring
-# below links out of it, and the Claude Code hook gate builds from it.
+# yadm bootstrap: converge this Mac to what the dotfiles expect. Idempotent, so
+# `yadm bootstrap` reruns safely and `yadm clone --bootstrap` builds a new Mac.
+set -u
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. "$HERE/lib.sh"
+export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$HOME/bin:$HOME/.local/bin:$PATH"
 HOME_REPO="$HOME/projects/src/github.com/TheOutdoorProgrammer/home"
-if [ ! -d "$HOME_REPO" ]; then
-  mkdir -p "$(dirname "$HOME_REPO")"
-  git clone https://github.com/TheOutdoorProgrammer/home.git "$HOME_REPO"
+
+step() { printf '\n== %s\n' "$*"; }
+
+step "Homebrew bundle (~/Brewfile is the tool list for every host)"
+command -v brew >/dev/null 2>&1 ||
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+brew bundle install --file="$HOME/Brewfile" --no-upgrade
+
+step "1Password service account"
+if [ ! -s "$HOME/OP.sh" ]; then
+  echo 'export OP_SERVICE_ACCOUNT_TOKEN=""' >"$HOME/OP.sh"
+  chmod 600 "$HOME/OP.sh"
+  echo "JOEY: put the 1Password service-account token into ~/OP.sh, then rerun yadm bootstrap"
+  exit 1
+fi
+. "$HOME/OP.sh"
+
+step "GitHub CLI"
+gh auth status >/dev/null 2>&1 || vault_get "GitHub Personal Access Token" | gh auth login --with-token
+
+step "git identity: YubiKey when present, the vault's agent key otherwise"
+ensure_agent_identity
+
+step "oh-my-zsh and zsh-completions"
+[ -d "$HOME/.oh-my-zsh" ] ||
+  RUNZSH=no CHSH=no KEEP_ZSHRC=yes sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+ZC="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-completions"
+[ -d "$ZC" ] || git clone -q ssh://git@github.com/zsh-users/zsh-completions.git "$ZC"
+
+step "mise runtimes from ~/.tool-versions (Go stays a brew formula, see the home repo)"
+mise settings set auto_install true
+mise install
+mise reshim
+
+step "npm globals"
+npm install --global expo-cli commitizen cz-customizable >/dev/null
+
+step "easy-k8s-secrets"
+[ -d "$HOME/easy-k8s-secrets" ] || git clone -q https://github.com/Apollorion/easy-k8s-secrets.git "$HOME/easy-k8s-secrets"
+
+step "default apps and macOS defaults"
+for ext in md txt yaml yml sh js config json html css ts tsx jsx rb py go; do
+  duti -s com.sublimetext.4 ".$ext" all 2>/dev/null
+done
+defaults -currentHost write com.apple.dock tilesize -float 36
+defaults -currentHost write com.apple.dock show-recents -bool false
+defaults -currentHost write com.apple.AppleMultitouchTrackpad TrackpadCornerSecondaryClick -int 2
+defaults -currentHost write -g com.apple.swipescrolldirection -bool false
+defaults -currentHost write -g com.apple.mouse.scaling -float "3.0"
+
+step "gh copilot extension"
+gh extension list 2>/dev/null | grep -q gh-copilot || gh extension install github/gh-copilot
+
+step "agent-slack"
+command -v agent-slack >/dev/null 2>&1 ||
+  curl -fsSL https://raw.githubusercontent.com/stablyai/agent-slack/main/install.sh | sh
+
+step "home repo"
+if [ -d "$HOME_REPO" ]; then
+  git -C "$HOME_REPO" pull -q --ff-only || echo "home repo is not fast-forwardable here; boot-update reconciles it"
 else
-  git -C "$HOME_REPO" pull --ff-only
+  ghq get TheOutdoorProgrammer/home
 fi
 
-# Build + install ollie-hooks (Claude Code hook gate) and hoot (browser
-# question CLI) — home repo hooks/README.md + hoot/README.md.
-if command -v go &>/dev/null; then
-  make -C "$HOME_REPO/hooks" install
-  make -C "$HOME_REPO/hoot" install
-  make -C "$HOME_REPO/boards" install
-  echo "NOTE: ollie-hooks also needs its PreToolUse/PostToolUse entries in ~/.claude/settings.json — see $HOME_REPO/hooks/README.md"
-else
-  echo "SKIP: go not found — install Go, then: make -C $HOME_REPO/hooks install && make -C $HOME_REPO/hoot install && make -C $HOME_REPO/boards install"
+step "repo Go CLIs (joey, hoot, boards, custom-ollie-rules)"
+for dir in "$HOME_REPO"/*/; do
+  if [ -f "$dir/Makefile" ] && [ -f "$dir/go.mod" ]; then
+    make -C "$dir" install || echo "install failed for $dir"
+  fi
+done
+
+step "Claude Code MCP servers from ~/.claude/mcp-servers.json"
+MCP_CONFIG="$HOME/.claude/mcp-servers.json"
+if [ -f "$MCP_CONFIG" ] && command -v claude >/dev/null 2>&1; then
+  for server in $(jq -r 'keys[]' "$MCP_CONFIG"); do
+    claude mcp get "$server" >/dev/null 2>&1 && continue
+    claude mcp add-json "$server" "$(jq -c ".\"$server\"" "$MCP_CONFIG")" -s user && echo "mcp: $server"
+  done
 fi
 
-# Wire agent skills into Claude Code (~/.claude/skills)
-# Source of truth: ~/.agents/skills (tracked in dotfiles) and the home repo (if cloned).
-# Idempotent — only creates links that are missing, never clobbers existing files.
+step "Claude skills (~/.agents/skills and the home repo's skills/)"
 link_claude_skills() {
-  local src="$1"
+  local src="$1" dir name target
   [ -d "$src" ] || return 0
   mkdir -p "$HOME/.claude/skills"
-  local dir name target
   for dir in "$src"/*/; do
     [ -d "$dir" ] || continue
     name=$(basename "$dir")
     target="$HOME/.claude/skills/$name"
-    if [ -e "$target" ] || [ -L "$target" ]; then
-      continue
-    fi
-    ln -s "${dir%/}" "$target" && echo "linked claude skill: $name"
+    [ -e "$target" ] || [ -L "$target" ] || { ln -s "${dir%/}" "$target" && echo "skill: $name"; }
   done
 }
 link_claude_skills "$HOME/.agents/skills"
-link_claude_skills "$HOME/projects/src/github.com/TheOutdoorProgrammer/home/skills"
+link_claude_skills "$HOME_REPO/skills"
 
-# Secrets pre-commit gate for the yadm repo — betterleaks scans staged changes
-# and blocks the commit on findings (these dotfiles are public).
-if command -v yadm &>/dev/null; then
-  yadm gitconfig core.hooksPath "$HOME/.config/yadm/git-hooks"
+step "agent integrations: Herdr, skills, Moshi"
+if command -v herdr >/dev/null 2>&1; then
+  for agent in claude codex cursor; do
+    herdr integration install "$agent" >/dev/null 2>&1 && echo "herdr integration: $agent"
+  done
+fi
+# Always --skill: rjyo/moshi-skill also ships the author's Google Play skill.
+npx -y skills add herdrdev/herdr --skill herdr -g -y >/dev/null 2>&1 && echo "skill: herdr"
+npx -y skills add rjyo/moshi-skill --skill moshi-best-practices -g -y >/dev/null 2>&1 && echo "skill: moshi-best-practices"
+if command -v moshi-hook >/dev/null 2>&1; then
+  for agent in claude codex cursor; do
+    moshi-hook install --target "$agent" >/dev/null 2>&1 && echo "moshi-hook: $agent"
+  done
 fi
 
-# OnePassword Check
-if [ ! -f ~/OP.sh ]; then
-  echo "export OP_SERVICE_ACCOUNT_TOKEN=\"\"" > ~/OP.sh
-  chmod +x ~/OP.sh
-  echo "JOEY put your onepassword service account token into ~/OP.sh"
+step "boot-update LaunchAgent"
+PLIST="$HOME/Library/LaunchAgents/zone.stout.boot-update.plist"
+if [ ! -f "$PLIST" ]; then
+  cp "$HOME_REPO/scripts/zone.stout.boot-update.plist" "$PLIST" &&
+    launchctl bootstrap "gui/$(id -u)" "$PLIST" && echo "boot-update agent loaded"
 fi
+
+step "yadm secrets gate (betterleaks pre-commit; these dotfiles are public)"
+yadm gitconfig core.hooksPath "$HOME/.config/yadm/git-hooks"
+
+printf '\nbootstrap done\n'

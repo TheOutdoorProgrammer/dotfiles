@@ -87,6 +87,8 @@ gpg-connect-agent updatestartuptty /bye > /dev/null 2>&1
 source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
 source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
 source <(kubectl completion zsh)
+compdef k=kubectl
+source <(kubecm completion zsh)
 
 # bun completions
 [ -s "/Users/joeystout/.bun/_bun" ] && source "/Users/joeystout/.bun/_bun"

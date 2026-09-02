@@ -142,10 +142,11 @@ if command -v herdr >/dev/null 2>&1; then
     herdr integration install "$agent" >/dev/null 2>&1 && echo "herdr integration: $agent"
   done
 fi
-# Always --skill: rjyo/moshi-skill also ships the author's Google Play skill.
 npx -y skills add herdrdev/herdr --skill herdr -g -y >/dev/null 2>&1 && echo "skill: herdr"
-npx -y skills add rjyo/moshi-skill --skill moshi-best-practices -g -y >/dev/null 2>&1 && echo "skill: moshi-best-practices"
+# Only hosts that opted into Moshi (have moshi-hook) get its skill and hooks.
+# Always --skill: rjyo/moshi-skill also ships the author's Google Play skill.
 if command -v moshi-hook >/dev/null 2>&1; then
+  npx -y skills add rjyo/moshi-skill --skill moshi-best-practices -g -y >/dev/null 2>&1 && echo "skill: moshi-best-practices"
   for agent in claude codex cursor; do
     moshi-hook install --target "$agent" >/dev/null 2>&1 && echo "moshi-hook: $agent"
   done

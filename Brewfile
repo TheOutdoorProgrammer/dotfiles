@@ -6,7 +6,7 @@ tap "jwbargsten/misc"
 tap "norwoodj/tap"
 tap "romkatv/powerlevel10k"
 tap "spacelift-io/spacelift"
-tap "theoutdoorprogrammer/tap"
+tap "nerdswhofish/tap"
 
 brew "ansible"
 brew "aubio"       # beat detection for song-of-the-week hook snapping

@@ -16,10 +16,9 @@ autoload -U compinit; compinit
 export PATH="/opt/homebrew/bin:$PATH"
 # Homebrew Path Intel
 export PATH="/usr/local/sbin:$PATH"
-# Custom Path
-export PATH="$HOME/bin:$PATH"
-# GO Path
-export PATH="$HOME/projects/bin:$PATH"
+# Keep locally built tools from shadowing Homebrew releases.
+path=(${path:#$HOME/bin})
+path=(${path:#$HOME/projects/bin} "$HOME/bin" "$HOME/projects/bin")
 # BUN path
 export PATH="$HOME/.bun/bin:$PATH"
 

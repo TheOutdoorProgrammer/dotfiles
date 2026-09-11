@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Global git secrets gate. ~/.gitconfig sets core.hooksPath to this directory,
+# so it runs before EVERY commit in EVERY repo on the machine (except repos that
+# set their own core.hooksPath, e.g. husky; see chained/ for those). The yadm
+# repo points its own core.hooksPath here too (bootstrap), so these public
+# dotfiles get the same gate.
+#
+# Scans staged changes with betterleaks; a detected leak fails the commit.
+# Bypass a CONFIRMED false positive with `git commit --no-verify`, or allowlist
+# the pattern in a betterleaks config / .gitleaksignore so it stays gated.
+#
+# Fails closed: if betterleaks is missing the commit is refused rather than
+# silently unscanned, a secrets gate that fails open is no gate. (betterleaks
+# is in the Brewfile.)
+#
+# CAVEAT: a global core.hooksPath SHADOWS a repo's own .git/hooks/*. A repo that
+# relies on plain .git/hooks (not husky's .husky) has them bypassed; opt it out
+# with `git -C <repo> config core.hooksPath .git/hooks`, or keep the gate with
+# chained/ (see there).
+set -uo pipefail
+
+if ! command -v betterleaks >/dev/null 2>&1; then
+  echo "pre-commit: betterleaks not installed: 'brew install betterleaks' (it's in the Brewfile)" >&2
+  exit 1
+fi
+
+exec betterleaks git --pre-commit --staged --no-banner --redact=50 -v .

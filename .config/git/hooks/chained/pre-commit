@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Runs the global secrets gate AND the repo's own tracked hook, for repos that
+# set core.hooksPath themselves and would otherwise shadow the gate entirely
+# (git honors exactly one hooksPath: last one wins, and repo-local beats global).
+#
+# Point such a repo here instead of at its own dir:
+#   git -C <repo> config core.hooksPath ~/.config/git/hooks/chained
+#
+# Gate runs first so a leak fails before any repo hook rewrites the index.
+set -uo pipefail
+
+HOOK_NAME="$(basename "$0")"
+HERE="$(cd "$(dirname "$0")" && pwd)"
+
+"$HERE/../$HOOK_NAME" "$@" || exit $?
+
+# Repos keep their hooks in different places; take the first one that exists.
+repo_root="$(git rev-parse --show-toplevel)"
+for candidate in scripts/git-hooks .githooks .git/hooks; do
+  hook="$repo_root/$candidate/$HOOK_NAME"
+  if [[ -x "$hook" ]]; then
+    exec "$hook" "$@"
+  fi
+done

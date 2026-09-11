@@ -159,7 +159,7 @@ if [ ! -f "$PLIST" ]; then
     launchctl bootstrap "gui/$(id -u)" "$PLIST" && echo "boot-update agent loaded"
 fi
 
-step "yadm secrets gate (betterleaks pre-commit; these dotfiles are public)"
-yadm gitconfig core.hooksPath "$HOME/.config/yadm/git-hooks"
+step "yadm secrets gate (same betterleaks pre-commit as every other repo; these dotfiles are public)"
+yadm gitconfig core.hooksPath "$HOME/.config/git/hooks"
 
 printf '\nbootstrap done\n'

@@ -98,6 +98,7 @@ else
 fi
 
 step "repo Go CLIs (joey, hoot, boards, custom-ollie-rules)"
+ensure_go_module_cache "$HOME/Library/Caches/go-mod.noindex" || exit 1
 # Homebrew's go defaults GOTOOLCHAIN=local, so a go.work toolchain bump fails
 # `go vet` from any non-login shell (this one, hooks, gopls). Persist auto.
 go env -w GOTOOLCHAIN=auto

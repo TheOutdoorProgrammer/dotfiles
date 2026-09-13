@@ -1,6 +1,56 @@
 #!/bin/bash
 # Shared by ~/.bootstrap/main.sh (the yadm bootstrap) and the home repo's
-# scripts/boot-update.sh, so both agree on how a host gets its git identity.
+# scripts/boot-update.sh for host setup operations.
+
+ensure_go_module_cache() {
+  local target="$1" current source_device target_device
+  case "$target" in
+    /*.noindex) ;;
+    *) echo "Go module cache must be an absolute .noindex path" >&2; return 1 ;;
+  esac
+  if [ -L "$target" ]; then
+    echo "Go module cache destination must not be a symlink: $target" >&2
+    return 1
+  fi
+  if [ -n "${GOMODCACHE:-}" ]; then
+    echo "unset GOMODCACHE before configuring the persistent Go module cache" >&2
+    return 1
+  fi
+  current=$(go env GOMODCACHE) || return 1
+  if [ "$current" = "$target" ]; then
+    mkdir -p "$target"
+    return $?
+  fi
+  if [ -L "$current" ]; then
+    if [ "$(readlink "$current")" != "$target" ] || [ ! -d "$target" ]; then
+      echo "refusing to replace the existing cache symlink: $current" >&2
+      return 1
+    fi
+  elif [ -e "$current" ]; then
+    if [ ! -d "$current" ] || [ -e "$target" ]; then
+      echo "refusing to merge or overwrite Go module caches: $current and $target" >&2
+      return 1
+    fi
+    mkdir -p "$(dirname "$target")" || return 1
+    source_device=$(stat -f %d "$current") || return 1
+    target_device=$(stat -f %d "$(dirname "$target")") || return 1
+    if [ "$source_device" != "$target_device" ]; then
+      echo "Go cache migration requires a rename on the same filesystem" >&2
+      return 1
+    fi
+    mv "$current" "$target" || return 1
+    # Old build paths remain valid, including when persisting Go's setting fails.
+    if ! ln -s "$target" "$current"; then
+      mv "$target" "$current"
+      return 1
+    fi
+  else
+    mkdir -p "$target" || return 1
+    mkdir -p "$(dirname "$current")" || return 1
+    ln -s "$target" "$current" || return 1
+  fi
+  go env -w GOMODCACHE="$target"
+}
 
 # vault_get reads one CLI-vault secret: through joey once it is built, through
 # raw op before that (bootstrap runs first). Needs ~/OP.sh sourced.

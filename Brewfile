@@ -66,6 +66,7 @@ brew "sops"
 brew "swiftlint"
 brew "telnet"
 brew "terraform-docs"
+brew "tofu-ls"     # OpenTofu language server shared by agents and editors
 brew "tfsort"
 brew "tmux"
 brew "tree"

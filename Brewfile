@@ -15,6 +15,7 @@ brew "betterleaks"
 brew "buf"
 brew "buildpacks/tap/pack"
 brew "cmake"
+brew "cloudflared" # carries authenticated Rex WebSockets from the minis to Cloudflare Tunnel
 brew "docker-buildx" # `docker build` needs it for $BUILDPLATFORM; wire it in via cliPluginsExtraDirs
 brew "duti"
 brew "ekristen/tap/aws-nuke"

@@ -3,11 +3,6 @@ font-family = FiraMono Nerd Font Mono
 cursor-style = underline
 link-url = true
 
-# The first Ghostty surface is a Herdr client on the default session. New tabs
-# use the default shell. Plain shell when Herdr is broken:
-#   open -na Ghostty --args --command=/bin/zsh
-initial-command = /opt/homebrew/bin/herdr
-
 # Herdr owns its tabs, splits and pane focus, so these send its ctrl+b prefix
 # chords (\x02 is ctrl+b). Cmd+G creates a separate Ghostty shell tab.
 keybind = cmd+g=new_tab

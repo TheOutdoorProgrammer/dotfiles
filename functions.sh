@@ -51,12 +51,19 @@ j() {
   esac
 }
 
-# claude, codex and cursor run their agents permissive by default (teams for
-# Claude); subcommands like `codex login` pass through, and `<tool> --escape …`
-# is the raw binary, same as `git --escape`: `cursor --escape .` opens the IDE.
+# claude, codex and cursor run their agents permissive by default; subcommands
+# like `codex login` pass through, and `<tool> --escape …` is the raw binary,
+# same as `git --escape`: `cursor --escape .` opens the IDE.
 claude() {
   [[ "$1" == --escape ]] && { shift; command claude "$@"; return; }
-  j claude teams --dangerously-skip-permissions "$@"
+  case "$1" in
+  agents|attach|auth|auto-mode|doctor|gateway|import|install|logs|mcp|plugin|project|respawn|rm|setup-token|stop|ultrareview|update)
+    command claude "$@"
+    ;;
+  *)
+    command claude --dangerously-skip-permissions "$@"
+    ;;
+  esac
 }
 codex() {
   [[ "$1" == --escape ]] && { shift; command codex "$@"; return; }
@@ -81,7 +88,7 @@ code() {
     agent=$(printf '%s\n' \
       $'codex\tOpenAI Codex' \
       $'cursor\tCursor agent' \
-      $'claude\tClaude Code, teammates as Herdr tabs' \
+      $'claude\tClaude Code' \
       | fzf --height=~8 --reverse --prompt='agent > ' --delimiter=$'\t' --with-nth=1,2 | cut -f1) || return
   else
     local choice
@@ -89,7 +96,7 @@ code() {
   fi
   [[ -z "$agent" ]] && return
   case "$agent" in
-  claude) j claude teams --dangerously-skip-permissions "$@" ;;
+  claude) claude "$@" ;;
   cursor) j cursor yolo "$@" ;;
   codex) j codex yolo "$@" ;;
   *) print -u2 "code: unknown agent '$agent' (codex, cursor, claude)"; return 1 ;;

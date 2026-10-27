@@ -41,9 +41,6 @@
         "command": "/opt/homebrew/bin/trailwire hook cursor"
       },
       {
-        "command": "bash '/Users/joeystout/.cursor/herdr-agent-state.sh' session"
-      },
-      {
         "command": "/Users/joeystout/.cursor/rex-session-start.sh"
       }
     ],

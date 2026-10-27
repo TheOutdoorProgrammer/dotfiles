@@ -67,7 +67,7 @@ source ~/.orbstack/shell/init.zsh 2>/dev/null || :
 # Personal Stuff
 source ~/functions.sh
 source ~/secrets.sh
-source ~/.config/zsh/herdr-goto.zsh
+source ~/.config/zsh/agent-goto.zsh
 export AWS_PAGER=""
 export GOPATH=~/projects
 # Go manages its own toolchain (brew installs one real `go`; each project's
@@ -113,6 +113,6 @@ export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/dev:$PATH"
 
 # Capture the fully-built interactive PATH for team agents, read by the
-# ollie-hooks teammate-env rule when a teammate launches without it. Inert under
-# Herdr, whose panes are login shells. Must be the LAST PATH line here.
+# ollie-hooks teammate-env rule when a teammate launches without it. Must be
+# the LAST PATH line here.
 print -r -- "$PATH" > "$HOME/.claude/teammate-path"

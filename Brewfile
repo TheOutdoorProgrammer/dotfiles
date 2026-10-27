@@ -34,7 +34,6 @@ brew "gpg"
 brew "gnupg"
 brew "hadolint"
 brew "helm"
-brew "herdr"      # the terminal multiplexer Ghostty launches (home repo ADR 0004)
 brew "hopenpgp-tools"
 brew "hub"
 brew "imagemagick" # composites the song-of-the-week credits tile
@@ -91,6 +90,7 @@ brew "norwoodj/tap/helm-docs"
 
 cask "arc"
 cask "alfred"
+cask "bruno"
 cask "claude-code@latest" # Claude Code CLI, `claude`
 cask "codex"      # OpenAI Codex CLI, `codex`, signs in with the ChatGPT plan
 cask "cursor-cli" # Cursor's terminal agent, `cursor-agent`, shares the Cursor subscription
@@ -106,10 +106,8 @@ cask "font-fira-mono-nerd-font"
 cask "ghostty"
 cask "google-chrome"
 cask "gcloud-cli"
-cask "hammerspoon"
 cask "intellij-idea"
 cask "iterm2"
-cask "karabiner-elements"
 cask "keybase"
 cask "languagetool"
 cask "moom"
@@ -125,9 +123,9 @@ cask "synology-drive"
 cask "chatgpt"
 cask "1password/tap/1password-cli"
 cask "1password"
+cask "vorssaint"
 cask "zoom"
 
-mas "Amphetamine", id: 937984704
 mas "Slack", id: 803453959
 mas "The Unarchiver", id: 425424353
 mas "In Your Face: Meeting Reminder", id: 1476964367

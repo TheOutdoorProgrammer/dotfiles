@@ -1,4 +1,4 @@
--- Match the Ghostty shortcuts used with Herdr.
+-- Keep Rex navigation consistent with the surrounding macOS apps.
 rex.bind("cmd+g", "pane.send_key", { key = "ctrl+g" })
 rex.bind("cmd+w", "pane.send_key", { key = "f12" })
 rex.bind("cmd+t", "client.tab.new")

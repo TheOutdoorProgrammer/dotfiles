@@ -15,17 +15,19 @@ agent-goto() {
     return 1
   fi
 
-  local root out key repo branch agent claude_description
+  local root out key repo branch agent claude_description worktree_key
+  worktree_key="ctrl-w"
+  [[ -n "${REX_SESSION:-}" ]] && worktree_key="cmd-w"
   root=$(ghq root)
   out=$(ghq list | fzf \
     --prompt='go to > ' --height=70% --reverse --border \
-    --header='enter: open   ctrl-w: open in a new worktree' \
-    --expect=ctrl-w \
+    --header="enter: open   ${worktree_key}: open in a new worktree" \
+    --expect=ctrl-w,f12 \
     --preview "f=\"$root/{}/README.md\"; if [ -f \"\$f\" ]; then command -v bat >/dev/null 2>&1 && bat --color=always --style=plain \"\$f\" || cat \"\$f\"; else ls -la \"$root/{}\"; fi") || return
   key=${out%%$'\n'*}
   repo=${out#*$'\n'}
   [[ -z "$repo" ]] && return
-  if [[ "$key" == ctrl-w ]]; then
+  if [[ "$key" == ctrl-w || "$key" == f12 ]]; then
     branch=""
     vared -p "branch for the worktree: " branch
     [[ -z "$branch" ]] && return

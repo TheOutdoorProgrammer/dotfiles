@@ -93,6 +93,7 @@ cask "arc"
 cask "alfred"
 cask "bruno"
 cask "claude-code@latest" # Claude Code CLI, `claude`
+cask "cloudflare-warp" # authenticates native Rex WebSockets with Cloudflare Zero Trust
 cask "codex"      # OpenAI Codex CLI, `codex`, signs in with the ChatGPT plan
 cask "cursor-cli" # Cursor's terminal agent, `cursor-agent`, shares the Cursor subscription
 cask "discord"

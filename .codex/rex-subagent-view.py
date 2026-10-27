@@ -24,6 +24,39 @@ def format_value(value):
     return json.dumps(value, indent=2, ensure_ascii=False)
 
 
+def close_rex_window(rex_bin, rex_session):
+    own_block = os.environ.get("REX_BLOCK")
+    if not own_block or not rex_session:
+        return
+    inspected = subprocess.run(
+        [
+            rex_bin,
+            "block",
+            "inspect",
+            own_block,
+            "--session",
+            rex_session,
+            "--json",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        text=True,
+        check=False,
+    )
+    if inspected.returncode != 0:
+        return
+    try:
+        window_id = json.loads(inspected.stdout)["block"]["window_id"]
+    except (KeyError, TypeError, json.JSONDecodeError):
+        return
+    subprocess.run(
+        [rex_bin, "window", "close", window_id, "--session", rex_session],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        check=False,
+    )
+
+
 def show_message(label, text):
     if not isinstance(text, str):
         return
@@ -153,9 +186,11 @@ while True:
 
     if os.path.isfile(closed_file):
         print("\n[closed] Codex subagent", flush=True)
+        close_rex_window(rex_bin, rex_session)
         break
     if os.path.isfile(parent_closed_file):
         print("\n[closed] Parent Codex session ended", flush=True)
+        close_rex_window(rex_bin, rex_session)
         break
     now = time.monotonic()
     if rex_session and parent_block and now - last_parent_check >= 1:
@@ -176,6 +211,7 @@ while True:
         ).returncode == 0
         if not parent_exists:
             print("\n[closed] Parent Rex tab ended", flush=True)
+            close_rex_window(rex_bin, rex_session)
             break
 
     time.sleep(0.2)

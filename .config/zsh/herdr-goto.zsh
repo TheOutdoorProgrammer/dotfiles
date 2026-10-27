@@ -23,7 +23,7 @@ agent-goto() {
     --prompt='go to > ' --height=70% --reverse --border \
     --header="enter: open   ${worktree_key}: open in a new worktree" \
     --expect=ctrl-w,f12 \
-    --preview "f=\"$root/{}/README.md\"; if [ -f \"\$f\" ]; then command -v bat >/dev/null 2>&1 && bat --color=always --style=plain \"\$f\" || cat \"\$f\"; else ls -la \"$root/{}\"; fi") || return
+    --preview "repo={}; f=\"$root/\$repo/README.md\"; if [ -f \"\$f\" ]; then command -v bat >/dev/null 2>&1 && bat --color=always --style=plain \"\$f\" || cat \"\$f\"; else ls -la \"$root/\$repo\"; fi") || return
   key=${out%%$'\n'*}
   repo=${out#*$'\n'}
   [[ -z "$repo" ]] && return

@@ -28,8 +28,10 @@ agent-goto() {
   repo=${out#*$'\n'}
   [[ -z "$repo" ]] && return
   if [[ "$key" == ctrl-w || "$key" == f12 ]]; then
-    branch=""
-    vared -p "branch for the worktree: " branch
+    branch=$(printf '%s\n' 'Type a new branch name, then press Enter' | fzf \
+      --phony --print-query --no-info \
+      --prompt='branch > ' --height=~4 --reverse --border) || return
+    branch=${branch%%$'\n'*}
     [[ -z "$branch" ]] && return
   fi
 

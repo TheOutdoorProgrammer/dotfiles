@@ -11,6 +11,15 @@ def inside_cursor(path):
     return os.path.commonpath((cursor_root, os.path.realpath(path))) == cursor_root
 
 
+def format_value(value):
+    if isinstance(value, str):
+        try:
+            value = json.loads(value)
+        except json.JSONDecodeError:
+            return value
+    return json.dumps(value, indent=2, ensure_ascii=False)
+
+
 def render(line):
     try:
         event = json.loads(line)
@@ -28,11 +37,19 @@ def render(line):
             continue
         if role == "user" and item.get("type") == "text":
             print(f"\nTASK\n{item.get('text', '')}", flush=True)
+        elif role == "user" and item.get("type") == "tool_result":
+            print(f"OUTPUT\n{format_value(item.get('content'))}", flush=True)
         elif role == "assistant":
             if item.get("type") == "text":
                 print(item.get("text", ""), flush=True)
             elif item.get("type") == "tool_use":
-                print(f"▶ {item.get('name') or 'tool'}", flush=True)
+                print(f"\n▶ {item.get('name') or 'tool'}", flush=True)
+                if item.get("input") not in (None, {}):
+                    print(f"INPUT\n{format_value(item.get('input'))}", flush=True)
+            elif item.get("type") in ("thinking", "reasoning"):
+                summary = item.get("summary")
+                if summary:
+                    print(f"\nTHINKING SUMMARY\n{format_value(summary)}", flush=True)
 
 
 if len(sys.argv) != 3 or not inside_cursor(sys.argv[1]) or not inside_cursor(sys.argv[2]):

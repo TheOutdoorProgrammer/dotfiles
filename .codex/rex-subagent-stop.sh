@@ -10,10 +10,13 @@ if [ -n "$agent_id" ]; then
   tmp=$(mktemp "$state_root/status.XXXXXX")
   printf '%s' "$payload" |
     jq '{
-      status: "finished",
+      status: "returned",
+      session_id,
+      turn_id,
       agent_id,
       agent_type,
-      last_assistant_message
+      last_assistant_message,
+      written_at: now
     }' >"$tmp" &&
     mv "$tmp" "$state_root/$key.status"
 fi

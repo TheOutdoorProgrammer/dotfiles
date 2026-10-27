@@ -71,7 +71,7 @@ cursor-agent() {
   j cursor yolo "$@"
 }
 
-# Pick a coding agent (claude, cursor, codex) and launch it here in permissive
+# Pick a coding agent (codex, cursor, claude) and launch it here in permissive
 # mode, as `code` always did for Claude. `code <agent> [args]` skips the picker.
 code() {
   local agent=$1
@@ -79,20 +79,20 @@ code() {
     shift
   elif command -v fzf >/dev/null 2>&1; then
     agent=$(printf '%s\n' \
-      $'claude\tClaude Code, teammates as Herdr tabs' \
-      $'cursor\tCursor agent' \
       $'codex\tOpenAI Codex' \
+      $'cursor\tCursor agent' \
+      $'claude\tClaude Code, teammates as Herdr tabs' \
       | fzf --height=~8 --reverse --prompt='agent > ' --delimiter=$'\t' --with-nth=1,2 | cut -f1) || return
   else
     local choice
-    select choice in claude cursor codex; do agent=$choice; break; done
+    select choice in codex cursor claude; do agent=$choice; break; done
   fi
   [[ -z "$agent" ]] && return
   case "$agent" in
   claude) j claude teams --dangerously-skip-permissions "$@" ;;
   cursor) j cursor yolo "$@" ;;
   codex) j codex yolo "$@" ;;
-  *) print -u2 "code: unknown agent '$agent' (claude, cursor, codex)"; return 1 ;;
+  *) print -u2 "code: unknown agent '$agent' (codex, cursor, claude)"; return 1 ;;
   esac
 }
 

@@ -67,7 +67,7 @@ source ~/.orbstack/shell/init.zsh 2>/dev/null || :
 # Personal Stuff
 source ~/functions.sh
 source ~/secrets.sh
-[[ "${HERDR_ENV:-}" == 1 ]] && source ~/.config/zsh/herdr-goto.zsh
+source ~/.config/zsh/herdr-goto.zsh
 export AWS_PAGER=""
 export GOPATH=~/projects
 # Go manages its own toolchain (brew installs one real `go`; each project's

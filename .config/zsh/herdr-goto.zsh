@@ -1,14 +1,21 @@
-# herdr-goto: Ctrl+G fuzzy-picks a ghq repo, then an agent, and opens the repo
-# as a Herdr workspace running it; ctrl-w in the repo picker uses a worktree.
-# Thin on purpose: `joey claude goto` owns the workspace/tab/pane resolution.
+# agent-goto: Ctrl+G fuzzy-picks a ghq repo, then an agent, and opens the repo
+# in Rex or Herdr; ctrl-w in the repo picker uses a worktree.
+# Thin on purpose: `joey claude goto` owns the multiplexer-specific opening.
 
-herdr-goto() {
-  command -v ghq   >/dev/null 2>&1 || { print -u2 "herdr-goto: ghq not installed";   return 1 }
-  command -v fzf   >/dev/null 2>&1 || { print -u2 "herdr-goto: fzf not installed";   return 1 }
-  command -v herdr >/dev/null 2>&1 || { print -u2 "herdr-goto: herdr not installed"; return 1 }
-  [[ "${HERDR_ENV:-}" == 1 ]]     || { print -u2 "herdr-goto: run it inside a Herdr pane (start \`herdr\` first)"; return 1 }
+agent-goto() {
+  command -v ghq  >/dev/null 2>&1 || { print -u2 "agent-goto: ghq not installed";  return 1 }
+  command -v fzf  >/dev/null 2>&1 || { print -u2 "agent-goto: fzf not installed";  return 1 }
+  command -v joey >/dev/null 2>&1 || { print -u2 "agent-goto: joey not installed"; return 1 }
+  if [[ -n "${REX_SESSION:-}" ]]; then
+    command -v rex >/dev/null 2>&1 || { print -u2 "agent-goto: rex not installed"; return 1 }
+  elif [[ "${HERDR_ENV:-}" == 1 ]]; then
+    command -v herdr >/dev/null 2>&1 || { print -u2 "agent-goto: herdr not installed"; return 1 }
+  else
+    print -u2 "agent-goto: run it inside Rex or Herdr"
+    return 1
+  fi
 
-  local root out key repo branch agent
+  local root out key repo branch agent claude_description
   root=$(ghq root)
   out=$(ghq list | fzf \
     --prompt='go to > ' --height=70% --reverse --border \
@@ -24,8 +31,10 @@ herdr-goto() {
     [[ -z "$branch" ]] && return
   fi
 
+  claude_description="Claude Code"
+  [[ "${HERDR_ENV:-}" == 1 ]] && claude_description+=", teammates as Herdr tabs"
   agent=$(printf '%s\n' \
-    $'claude\tClaude Code, teammates as Herdr tabs' \
+    "claude"$'\t'"${claude_description}" \
     $'cursor\tCursor agent' \
     $'codex\tOpenAI Codex' \
     | fzf --prompt='agent > ' --height=~8 --reverse --border --delimiter=$'\t' --with-nth=1,2 | cut -f1) || return
@@ -38,10 +47,12 @@ herdr-goto() {
   fi
 }
 
+herdr-goto() { agent-goto "$@" }
+
 # Bind to Ctrl+G (overrides zsh's default ^G list-expand). Guarded so a
 # non-interactive source never errors on zle/bindkey.
 if [[ -o interactive ]]; then
-  _herdr_goto_widget() { herdr-goto; zle reset-prompt }
-  zle -N _herdr_goto_widget
-  bindkey '^g' _herdr_goto_widget
+  _agent_goto_widget() { agent-goto; zle reset-prompt }
+  zle -N _agent_goto_widget
+  bindkey '^g' _agent_goto_widget
 fi

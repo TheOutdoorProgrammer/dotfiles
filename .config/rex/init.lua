@@ -1,5 +1,5 @@
 -- Match the Ghostty shortcuts used with Herdr.
-rex.bind("cmd+g", "client.tab.new")
+rex.bind("cmd+g", "pane.send_key", { key = "ctrl+g" })
 rex.bind("cmd+t", "client.tab.new")
 
 rex.bind("cmd+\\", "pane.split", { direction = "right" })

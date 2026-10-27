@@ -1,0 +1,63 @@
+{
+  "hooks": {
+    "beforeSubmitPrompt": [
+      {
+        "command": "/opt/homebrew/bin/trailwire hook cursor"
+      }
+    ],
+    "postToolUse": [
+      {
+        "command": "/opt/homebrew/bin/trailwire hook cursor"
+      },
+      {
+        "command": "/Users/joeystout/bin/plannotator-review-gate hook-post cursor",
+        "matcher": "Write|Delete",
+        "timeout": 30
+      }
+    ],
+    "postToolUseFailure": [
+      {
+        "command": "/opt/homebrew/bin/trailwire hook cursor"
+      }
+    ],
+    "preToolUse": [
+      {
+        "command": "/opt/homebrew/bin/trailwire hook cursor"
+      },
+      {
+        "command": "/Users/joeystout/bin/plannotator-review-gate hook cursor",
+        "failClosed": true,
+        "matcher": "Shell|Write|Delete",
+        "timeout": 345600
+      }
+    ],
+    "sessionEnd": [
+      {
+        "command": "/opt/homebrew/bin/trailwire hook cursor"
+      }
+    ],
+    "sessionStart": [
+      {
+        "command": "/opt/homebrew/bin/trailwire hook cursor"
+      },
+      {
+        "command": "bash '/Users/joeystout/.cursor/herdr-agent-state.sh' session"
+      },
+      {
+        "command": "/Users/joeystout/.cursor/rex-session-start.sh"
+      }
+    ],
+    "subagentStop": [
+      {
+        "command": "/Users/joeystout/.cursor/rex-subagent-stop.sh",
+        "timeout": 5
+      }
+    ],
+    "stop": [
+      {
+        "command": "/opt/homebrew/bin/trailwire hook cursor"
+      }
+    ]
+  },
+  "version": 1
+}

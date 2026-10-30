@@ -43,3 +43,4 @@ startup_cmd = "ollie-custom-rules"
 verb = "Rewrite"
 events = ["PreToolUse"]
 tools = ["Bash"]
+

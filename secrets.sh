@@ -15,21 +15,22 @@ _fetch() {
   _secrets_labels[$!]=$outfile
 }
 
-_fetch github_token  joey vault get "GitHub Personal Access Token"
-_fetch dockerhub     joey vault get "DockerHub"
-_fetch openai        joey vault get "OpenAPI Key"
-_fetch cloudflare    joey vault get "Cloudflare API Key"
-_fetch smithery      joey vault get "Smithery API Key"
-_fetch perplexity    joey vault get "perplexity_api_key"
-_fetch obsidian      joey vault get "Obsidian API Key"
-_fetch slack         joey vault get "SLACK_WORKSPACE_URL"
-_fetch gemini        joey vault get "GEMINI_API_KEY"
-_fetch airtrail      joey vault get "AirTrail API Key"
-_fetch dusk_mcp      joey vault get "Dusk DUSK_MCP_TOKEN"
-_fetch fledge        joey vault get "fledge upload token"
-_fetch posthog       joey vault get "PostHog personal API key"
-#_fetch litellm       joey vault get "LiteLLM API Key"
-#_fetch litellm_work  joey vault get "LiteLLM Work API Key"
+# IDs avoid namespace metadata lookups before value-cache reads.
+_fetch github_token  joey vault get "eti7veefjbh2lkbmmd3ii3fgta" # /github/personal-access-token
+_fetch dockerhub     joey vault get "mt3hlq7gcubnmba5wdflttpndy" # /dockerhub/credentials
+_fetch openai        joey vault get "3s3aqs5fbbdr4jxnoe7d4wjfgy" # /openai/api-key
+_fetch cloudflare    joey vault get "ro7e5rqpggqsrbv6v52paix6h4" # /cloudflare/api-key
+_fetch smithery      joey vault get "mgys56ehycapbue3pbfqjpfcaa" # /smithery/api-key
+_fetch perplexity    joey vault get "gsktjnpyyjbxinv74oklcz6a4e" # /perplexity/api-key
+_fetch obsidian      joey vault get "ndv6nvpgwczwydfzx7robs2t3q" # /obsidian/api-key
+_fetch slack         joey vault get "bd6ikr33degbuaymfslsw6akra" # /slack/workspace-url
+_fetch gemini        joey vault get "fw2dvqodudg7fo3hpgzaojmafe" # /gemini/api-key
+_fetch airtrail      joey vault get "inzb3rmmzzdegjrwarjojxlmfi" # /airtrail/api-key
+_fetch dusk_mcp      joey vault get "2qdtswjhsvxp43jtxru3kgxp4y" # /dusk/mcp-token
+_fetch fledge        joey vault get "5fd2fop5cyo7ugyprz3lalasra" # /fledge/upload-token
+_fetch posthog       joey vault get "nzbrmnoymgxw3jksqx6bwtfj3e" # /posthog/personal-api-key
+#_fetch litellm       joey vault get "v7o76mv5nyougddegizm2ekdmi" # /litellm/api-key
+#_fetch litellm_work  joey vault get "xaumelpfliqdt4wywakzethkhe" # /litellm/work/api-key
 
 # Watchdog: kill any stragglers after 60s
 ( sleep 60; kill $_secrets_pids 2>/dev/null ) &
@@ -87,16 +88,10 @@ export POSTHOG_API_KEY=$(<"$_secrets_tmp/posthog")
 #export ANTHROPIC_BASE_URL=https://ai.stout.zone
 #export ANTHROPIC_CUSTOM_HEADERS="x-litellm-api-key: Bearer $LITELLM_WORK_API_KEY"
 
-# Cache secrets for cmux team agents. Teammates launch with a stripped env and
-# cannot reach 1Password, so the ollie-hooks teammate-env rule sources this into
-# their Bash and ~/.claude/mcp-path-wrapper.sh sources it for stdio MCP servers.
-# Mode 600, git-ignored. The var list is derived from this script's own `export`
-# lines so it never drifts.
-#
-# Written ATOMICALLY (temp + mv) and ONLY when the critical token actually
-# resolved — a shell whose fetch failed or timed out must NOT clobber a good
-# cache that running teammates depend on. `emulate -L zsh` isolates the block
-# from the interactive shell's options (nounset/errexit/pipefail).
+# Let stripped-environment agents and MCP processes reuse fetched credentials.
+# Replace the private cache atomically only after the critical token resolves;
+# a failed fetch must not clobber credentials that running agents depend on.
+# Derive names from exports and isolate interactive options with `emulate`.
 if [[ -n "$GITHUB_TOKEN" && -d "$HOME/.claude" ]]; then
   (
     emulate -L zsh
